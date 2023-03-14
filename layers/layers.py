@@ -11,8 +11,6 @@ from torch.nn.parameter import Parameter
 def get_dim_act(args):
     """
     Helper function to get dimension and activation at every layer.
-    :param args:
-    :return:
     """
     if not args.act:
         act = lambda x: x
@@ -31,7 +29,7 @@ class GraphConvolution(Module):
     Simple GCN layer.
     """
 
-    def __init__(self, in_features, out_features, dropout, act, use_bias):
+    def __init__(self, in_features: int, out_features: int, dropout, act, use_bias: bool):
         super(GraphConvolution, self).__init__()
         self.dropout = dropout
         self.linear = nn.Linear(in_features, out_features, use_bias)
@@ -40,9 +38,11 @@ class GraphConvolution(Module):
         self.out_features = out_features
 
     def forward(self, input):
-        x, adj = input
-        hidden = self.linear.forward(x)
-        hidden = F.dropout(hidden, self.dropout, training=self.training)
+        """Forward pass, includes linear message computing and average aggregation."""
+        x, adj = input # x is node features, adj is adjacency matrix
+        hidden = self.linear.forward(x) # message computing
+        hidden = F.dropout(hidden, self.dropout, training=self.training) # dropout
+        # self.training is bool that indicates whether we are training or testing
         if adj.is_sparse:
             support = torch.spmm(adj, hidden)
         else:
@@ -51,6 +51,7 @@ class GraphConvolution(Module):
         return output
 
     def extra_repr(self):
+        """String representation."""
         return 'input_dim={}, output_dim={}'.format(
                 self.in_features, self.out_features
         )

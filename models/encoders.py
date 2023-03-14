@@ -31,7 +31,7 @@ class Encoder(nn.Module):
 
 class MLP(Encoder):
     """
-    Multi-layer perceptron.
+    Multi-layer perceptron. Only linear layers, does not use graph structure.
     """
 
     def __init__(self, c, args):
@@ -49,7 +49,9 @@ class MLP(Encoder):
 
 class HNN(Encoder):
     """
-    Hyperbolic Neural Networks.
+    Hyperbolic Neural Networks. On manifold, does not use grpah structure.
+
+    Uses HNN layers.
     """
 
     def __init__(self, c, args):
@@ -69,12 +71,15 @@ class HNN(Encoder):
         self.encode_graph = False
 
     def encode(self, x, adj):
+        # project node features to manifold before calling default encode from base class
         x_hyp = self.manifold.proj(self.manifold.expmap0(self.manifold.proj_tan0(x, self.c), c=self.c), c=self.c)
         return super(HNN, self).encode(x_hyp, adj)
 
 class GCN(Encoder):
     """
     Graph Convolution Networks.
+    
+    Uses GraphConvolution layers.
     """
 
     def __init__(self, c, args):
@@ -92,7 +97,7 @@ class GCN(Encoder):
 
 class HGCN(Encoder):
     """
-    Hyperbolic-GCN.
+    Hyperbolic-GCN. Uses HGCN layers.
     """
 
     def __init__(self, c, args):
@@ -115,6 +120,8 @@ class HGCN(Encoder):
         self.encode_graph = True
 
     def encode(self, x, adj):
+        """Expmap points to manifold before calling encode.
+        """
         x_tan = self.manifold.proj_tan0(x, self.curvatures[0])
         x_hyp = self.manifold.expmap0(x_tan, c=self.curvatures[0])
         x_hyp = self.manifold.proj(x_hyp, c=self.curvatures[0])
@@ -123,7 +130,7 @@ class HGCN(Encoder):
 
 class GAT(Encoder):
     """
-    Graph Attention Networks.
+    Graph Attention Networks. Uses GraphAttention layers.
     """
 
     def __init__(self, c, args):
@@ -147,6 +154,10 @@ class Shallow(Encoder):
     """
     Shallow Embedding method.
     Learns embeddings or loads pretrained embeddings and uses an MLP for classification.
+
+    Can be done on EUC or HYP manifolds.
+
+    self.use_feats determines whether to concatenate node features (MIXED methods).
     """
 
     def __init__(self, c, args):

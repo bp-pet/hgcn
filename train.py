@@ -31,7 +31,7 @@ def train(args):
         if not args.save_dir:
             dt = datetime.datetime.now()
             date = f"{dt.year}_{dt.month}_{dt.day}"
-            models_dir = os.path.join(os.environ['LOG_DIR'], args.task, date)
+            models_dir = os.path.join(os.getcwd() + "\logs", args.task, date)
             save_dir = get_dir_name(models_dir)
         else:
             save_dir = args.save_dir
@@ -45,7 +45,7 @@ def train(args):
     logging.info("Using seed {}.".format(args.seed))
 
     # Load data
-    data = load_data(args, os.path.join(os.environ['DATAPATH'], args.dataset))
+    data = load_data(args, os.path.join(os.getcwd() + "\data", args.dataset))
     args.n_nodes, args.feat_dim = data['features'].shape
     if args.task == 'nc':
         Model = NCModel
@@ -56,10 +56,10 @@ def train(args):
         args.nb_edges = len(data['train_edges'])
         if args.task == 'lp':
             Model = LPModel
-        else:
-            Model = RECModel
-            # No validation for reconstruction task
-            args.eval_freq = args.epochs + 1
+        # else:
+        #     Model = RECModel
+        #     # No validation for reconstruction task
+        #     args.eval_freq = args.epochs + 1
 
     if not args.lr_reduce_freq:
         args.lr_reduce_freq = args.epochs

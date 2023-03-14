@@ -14,6 +14,8 @@ class PoincareBall(Manifold):
 
     Note that 1/sqrt(c) is the Poincare ball radius.
 
+    For now assume this is not used.
+
     """
 
     def __init__(self, ):

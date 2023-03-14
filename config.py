@@ -15,9 +15,9 @@ config_args = {
         'seed': (1234, 'seed for training'),
         'log-freq': (1, 'how often to compute print train/val metrics (in epochs)'),
         'eval-freq': (1, 'how often to compute val metrics (in epochs)'),
-        'save': (0, '1 to save model and logs and 0 otherwise'),
+        'save': (1, '1 to save model and logs and 0 otherwise'),
         'save-dir': (None, 'path to save training logs and model weights (defaults to logs/task/date/run/)'),
-        'sweep-c': (0, ''),
+        'sweep-c': (0, 'NOT USED'),
         'lr-reduce-freq': (None, 'reduce lr every lr-reduce-freq or None to keep lr constant'),
         'gamma': (0.5, 'gamma for lr scheduler'),
         'print-epoch': (True, ''),
@@ -25,7 +25,7 @@ config_args = {
         'min-epochs': (100, 'do not early stop before min-epochs')
     },
     'model_config': {
-        'task': ('nc', 'which tasks to train on, can be any of [lp, nc]'),
+        'task': ('lp', 'which tasks to train on, can be any of [lp, nc]'),
         'model': ('GCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HyperGCN]'),
         'dim': (128, 'embedding dimension'),
         'manifold': ('Euclidean', 'which manifold to use, can be any of [Euclidean, Hyperboloid, PoincareBall]'),

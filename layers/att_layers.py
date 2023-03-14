@@ -6,6 +6,14 @@ import torch.nn.functional as F
 
 
 class DenseAtt(nn.Module):
+    """
+    Only used externally in hyp_layers.
+
+    Parameters
+    ----------
+    nn : _type_
+        _description_
+    """
     def __init__(self, in_features, dropout):
         super(DenseAtt, self).__init__()
         self.dropout = dropout
@@ -13,6 +21,20 @@ class DenseAtt(nn.Module):
         self.in_features = in_features
 
     def forward (self, x, adj):
+        """_summary_
+
+        Parameters
+        ----------
+        x : _type_
+            Input x_i and x_j but what format?
+        adj : _type_
+            (Sparse) adjacency matrix?
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
         n = x.size(0)
         # n x 1 x d
         x_left = torch.unsqueeze(x, 1)
@@ -21,15 +43,17 @@ class DenseAtt(nn.Module):
         x_right = torch.unsqueeze(x, 0)
         x_right = x_right.expand(n, -1, -1)
 
-        x_cat = torch.cat((x_left, x_right), dim=2)
-        att_adj = self.linear(x_cat).squeeze()
-        att_adj = F.sigmoid(att_adj)
-        att_adj = torch.mul(adj.to_dense(), att_adj)
+        x_cat = torch.cat((x_left, x_right), dim=2) # concatenate
+        att_adj = self.linear(x_cat).squeeze() # linear
+        att_adj = F.sigmoid(att_adj) # activation
+        att_adj = torch.mul(adj.to_dense(), att_adj) # put in adjacency matrix
         return att_adj
 
 
 class SpecialSpmmFunction(torch.autograd.Function):
-    """Special function for only sparse region backpropataion layer."""
+    """Special function for only sparse region backpropataion layer.
+    
+    Only used by SpecialSpmm."""
 
     @staticmethod
     def forward(ctx, indices, values, shape, b):
@@ -53,6 +77,11 @@ class SpecialSpmmFunction(torch.autograd.Function):
 
 
 class SpecialSpmm(nn.Module):
+    """
+    Module for special sparse matrix multiplication.
+
+    Only used in SpGraphAttentionLayer.
+    """
     def forward(self, indices, values, shape, b):
         return SpecialSpmmFunction.apply(indices, values, shape, b)
 
@@ -60,6 +89,8 @@ class SpecialSpmm(nn.Module):
 class SpGraphAttentionLayer(nn.Module):
     """
     Sparse version GAT layer, similar to https://arxiv.org/abs/1710.10903
+
+    Only used in GraphAttentionLayer.
     """
 
     def __init__(self, in_features, out_features, dropout, alpha, activation):
@@ -118,7 +149,10 @@ class SpGraphAttentionLayer(nn.Module):
 
 
 class GraphAttentionLayer(nn.Module):
-    def __init__(self, input_dim, output_dim, dropout, activation, alpha, nheads, concat):
+    """
+    Only used externally in encoders and decoders.
+    """
+    def __init__(self, input_dim, output_dim, dropout, activation, alpha, nheads: int, concat: bool):
         """Sparse version of GAT."""
         super(GraphAttentionLayer, self).__init__()
         self.dropout = dropout

@@ -13,8 +13,8 @@ from layers.att_layers import DenseAtt
 def get_dim_act_curv(args):
     """
     Helper function to get dimension and activation at every layer.
-    :param args:
-    :return:
+    
+    Used in encoders.
     """
     if not args.act:
         act = lambda x: x
@@ -41,7 +41,7 @@ def get_dim_act_curv(args):
 
 class HNNLayer(nn.Module):
     """
-    Hyperbolic neural networks layer.
+    Hyperbolic neural networks layer: Linear, activation (ignore graph structure).
     """
 
     def __init__(self, manifold, in_features, out_features, c, dropout, act, use_bias):
@@ -57,7 +57,7 @@ class HNNLayer(nn.Module):
 
 class HyperbolicGraphConvolution(nn.Module):
     """
-    Hyperbolic graph convolution layer.
+    Hyperbolic graph convolution layer: Linear, aggregation, activation.
     """
 
     def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias, use_att, local_agg):
@@ -67,7 +67,7 @@ class HyperbolicGraphConvolution(nn.Module):
         self.hyp_act = HypAct(manifold, c_in, c_out, act)
 
     def forward(self, input):
-        x, adj = input
+        x, adj = input # x in node features, adj is adjacency matrix
         h = self.linear.forward(x)
         h = self.agg.forward(h, adj)
         h = self.hyp_act.forward(h)
@@ -77,10 +77,10 @@ class HyperbolicGraphConvolution(nn.Module):
 
 class HypLinear(nn.Module):
     """
-    Hyperbolic linear layer.
+    Hyperbolic linear layer (M@x + b on manifold, no activation).
     """
 
-    def __init__(self, manifold, in_features, out_features, c, dropout, use_bias):
+    def __init__(self, manifold, in_features, out_features, c, dropout, use_bias: bool):
         super(HypLinear, self).__init__()
         self.manifold = manifold
         self.in_features = in_features
@@ -97,6 +97,8 @@ class HypLinear(nn.Module):
         init.constant_(self.bias, 0)
 
     def forward(self, x):
+        """Forward pass on manifold.
+        """
         drop_weight = F.dropout(self.weight, self.dropout, training=self.training)
         mv = self.manifold.mobius_matvec(drop_weight, x, self.c)
         res = self.manifold.proj(mv, self.c)
@@ -116,7 +118,7 @@ class HypLinear(nn.Module):
 
 class HypAgg(Module):
     """
-    Hyperbolic aggregation layer.
+    Hyperbolic aggregation layer (can be attention or basic).
     """
 
     def __init__(self, manifold, c, in_features, dropout, use_att, local_agg):
@@ -159,21 +161,39 @@ class HypAgg(Module):
 class HypAct(Module):
     """
     Hyperbolic activation layer.
+
+    Input and output curvature given as parameters.
     """
 
-    def __init__(self, manifold, c_in, c_out, act):
+    def __init__(self, manifold, c_in: float, c_out: float, act):
+        """
+        Create object.
+
+        Parameters
+        ----------
+        manifold : Manifold
+            The manifld.
+        c_in : float
+            Input curvature.
+        c_out : float
+            Output curvature.
+        act : _type_
+            Activation function.
+        """
         super(HypAct, self).__init__()
         self.manifold = manifold
         self.c_in = c_in
         self.c_out = c_out
         self.act = act
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
+        """Forward pass through hyperbolic activation. Logmap, activation, expmap (with projections inbetween)."""
         xt = self.act(self.manifold.logmap0(x, c=self.c_in))
         xt = self.manifold.proj_tan0(xt, c=self.c_out)
         return self.manifold.proj(self.manifold.expmap0(xt, c=self.c_out), c=self.c_out)
 
     def extra_repr(self):
+        """Return string representation."""
         return 'c_in={}, c_out={}'.format(
             self.c_in, self.c_out
         )
