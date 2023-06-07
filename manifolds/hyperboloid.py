@@ -66,6 +66,7 @@ class Hyperboloid(Manifold):
     def proj_tan(self, u, p, c):
         """Projects u on the tangent space of p.
         Unclear why this formula is different."""
+        print(p.shape)
         d = p.size(1) - 1
         ux = torch.sum(p.narrow(-1, 1, d) * u.narrow(-1, 1, d), dim=1, keepdim=True)
         mask = torch.ones_like(u)

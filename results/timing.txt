@@ -1,0 +1,78 @@
+original
+seed 1234
+    240 epochs
+    218s
+    0.9408
+seed 123
+    620 epochs
+    502s
+    0.9554
+seed 12345
+    230 epochs
+    190s
+    0.9378
+
+patience 50
+seed 123
+    160 epochs
+    133s
+    0.9356
+
+patience 80
+seed 123
+    250 epochs
+    204s
+    0.9373
+seed 1234
+    220 epochs
+    179s
+    0.9408 same
+seed 12345
+    210 epochs
+    171s
+    0.9378
+
+momentum 0
+no change
+
+lr 0.001
+seed 123
+    700 peochs
+    758s
+    0.9360
+lr 0.1
+seed 123
+    560 epochs
+    502s
+    0.9631
+
+
+reduce-lr 100-0.5
+seed 123
+    330 epochs
+    555s
+    0.9377
+
+seed 1234
+    290 epochs
+    x
+    0.9430
+
+seed 12345
+    350 epochs
+    x
+    0.9369
+
+reduce-lr 100-0.1
+seed 123
+    330 epochs
+    271s
+    0.9338
+
+reduce-lr 100-0.8
+seed 123
+    500 epochs
+    472s
+    0.9507
+
+conclusion: reducing patience to 80 or introducing gamma=0.5 solves the issue

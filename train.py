@@ -11,15 +11,24 @@ import time
 import numpy as np
 import optimizers
 import torch
+import random
 from config import parser
 from models.base_models import NCModel, LPModel
 from utils.data_utils import load_data
 from utils.train_utils import get_dir_name, format_metrics
 
+import matplotlib.pyplot as plt
+
 
 def train(args):
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
+    
+    with open("curvature\\curvature.txt", 'w') as f:
+        f.write("")
+
+    np.random.seed(args.seed) # is overwritten by split_seed, so doesn't seem to do anything
+    torch.manual_seed(args.seed) # for SGD
+    random.seed(args.seed) # for deleting edges, not used currently
+    # args.split_seed = args.seed
     if int(args.double_precision):
         torch.set_default_dtype(torch.float64)
     if int(args.cuda) >= 0:
@@ -111,7 +120,13 @@ def train(args):
         if (epoch + 1) % args.eval_freq == 0:
             model.eval()
             embeddings = model.encode(data['features'], data['adj_train_norm'])
+            # print(embeddings)
             val_metrics = model.compute_metrics(embeddings, data, 'val')
+
+            ################################
+            plt.scatter(epoch, 0.5 * (val_metrics["roc"].item() + val_metrics["ap"].item()), marker='x', c='r')
+            ################################
+
             if (epoch + 1) % args.log_freq == 0:
                 logging.info(" ".join(['Epoch: {:04d}'.format(epoch + 1), format_metrics(val_metrics, 'val')]))
             if model.has_improved(best_val_metrics, val_metrics):
@@ -126,9 +141,13 @@ def train(args):
                 if counter == args.patience and epoch > args.min_epochs:
                     logging.info("Early stopping")
                     break
+    
+    plt.savefig(os.path.join(save_dir, 'loss.png'))
+    plt.clf()
 
     logging.info("Optimization Finished!")
-    logging.info("Total time elapsed: {:.4f}s".format(time.time() - t_total))
+    elapsed_time = time.time() - t_total
+    logging.info("Total time elapsed: {:.4f}s".format(elapsed_time))
     if not best_test_metrics:
         model.eval()
         best_emb = model.encode(data['features'], data['adj_train_norm'])
@@ -146,6 +165,110 @@ def train(args):
         torch.save(model.state_dict(), os.path.join(save_dir, 'model.pth'))
         logging.info(f"Saved model in {save_dir}")
 
+    roc = best_test_metrics["roc"]
+    with open("times.txt", 'a') as f:
+        f.write(f"\nEpoch {epoch}, time {elapsed_time}, roc {roc}")
+
+    return best_test_metrics
+    
+def multiple_runs(args, n=20):
+    """
+    Run same configuration multiple times, save test ROC/accuracy. Return average.
+
+    Generate a different random seed for each run.
+    """
+    seed = np.random.randint(0, 100)
+
+    if args.task == "lp":
+        metric = "roc"
+    else:
+        metric = "accuracy" # might not be correct
+
+    args.log_freq=1000
+    args.save = 0
+
+    results = []
+    error_counter = 0
+    for i in range(n):
+        print(f"Round {i + 1} of {n}")
+        args.seed = (i + 1) * seed
+        while True:
+            try:
+                results.append(train(args)[metric])
+            except Exception as e:
+                error_counter += 1
+            finally:
+                break
+    if len(results) == 0:
+        return 0, n
+    avg = sum(results) / len(results)
+    return avg, error_counter
+
+def vary_params(args):
+    """
+    Run configurations with array of parameters, save results to file.
+    """
+    save_dir = "results.txt"
+
+
+    for model in ["HGCN"]: # change if GCN also wanted
+        args.model = model
+        if model == "GCN":
+            args.manifold = "Euclidean"
+            num_runs = 20
+        else:
+            args.manifold = "Hyperboloid"
+            num_runs = 5
+        with open(save_dir, 'a') as f:
+            f.write(f"{model}, {num_runs} runs for each result\n")
+        for temp in [0.0, 0.2, 0.4, 0.6, 0.8]:
+            with open(save_dir, 'a') as f:
+                f.write(f"\tTemperature {temp}\n")
+            args.temperature = temp
+            for noise in [-1, 0.0, 0.2, 0.4, 0.6, 0.8]:
+                args.noise_std = noise
+                avg, errors = multiple_runs(args, n=num_runs)
+                with open(save_dir, 'a') as f:
+                    f.write(f"\t\tNoise {noise}, result {avg}, error runs {errors}\n")
+
 if __name__ == '__main__':
+
     args = parser.parse_args()
-    train(args)
+
+    args.model = "HGCN"
+
+    args.dataset = "hrg"
+
+    if args.model == "GCN":
+        args.manifold = "Euclidean"
+    elif args.model == "HGCN":
+        args.manifold = "Hyperboloid"
+    
+    # args.lr_reduce_freq = 200
+    # args.gamma = 0.5
+    # args.lr = 0.1
+    # args.epochs = 4000
+    # args.patience = 300
+    # args.weight_decay = 0.001
+
+    args.use_feats = 1
+
+    args.dim = 16
+
+    # args.num_layers = 2
+
+    # torch.Size([100, 16])
+
+    for rseed in range(1):
+        args.seed = rseed
+        train(args)
+        # try:
+        #     train(args)
+        # except Exception as e:
+        #     print(e)
+        #     continue
+
+
+    # multiple_runs(args)
+    # vary_params(args)
+ 

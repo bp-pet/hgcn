@@ -113,7 +113,7 @@ class HGCN(Encoder):
             act = acts[i]
             hgc_layers.append(
                     hyp_layers.HyperbolicGraphConvolution(
-                            self.manifold, in_dim, out_dim, c_in, c_out, args.dropout, act, args.bias, args.use_att, args.local_agg
+                            self.manifold, in_dim, out_dim, c_in, c_out, args.dropout, act, args.bias, args.use_att, args.local_agg, i
                     )
             )
         self.layers = nn.Sequential(*hgc_layers)

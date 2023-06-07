@@ -7,13 +7,13 @@ config_args = {
         'lr': (0.01, 'learning rate'),
         'dropout': (0.0, 'dropout probability'),
         'cuda': (-1, 'which cuda device to use (-1 for cpu training)'),
-        'epochs': (5000, 'maximum number of epochs to train for'),
+        'epochs': (3000, 'maximum number of epochs to train for'),
         'weight-decay': (0., 'l2 regularization strength'),
         'optimizer': ('Adam', 'which optimizer to use, can be any of [Adam, RiemannianAdam]'),
         'momentum': (0.999, 'momentum in optimizer'),
         'patience': (100, 'patience for early stopping'),
         'seed': (1234, 'seed for training'),
-        'log-freq': (1, 'how often to compute print train/val metrics (in epochs)'),
+        'log-freq': (10, 'how often to compute print train/val metrics (in epochs)'),
         'eval-freq': (1, 'how often to compute val metrics (in epochs)'),
         'save': (1, '1 to save model and logs and 0 otherwise'),
         'save-dir': (None, 'path to save training logs and model weights (defaults to logs/task/date/run/)'),
@@ -26,10 +26,10 @@ config_args = {
     },
     'model_config': {
         'task': ('lp', 'which tasks to train on, can be any of [lp, nc]'),
-        'model': ('GCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HyperGCN]'),
-        'dim': (128, 'embedding dimension'),
+        'model': ('HGCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HGCN]'),
+        'dim': (2, 'embedding dimension'),
         'manifold': ('Euclidean', 'which manifold to use, can be any of [Euclidean, Hyperboloid, PoincareBall]'),
-        'c': (1.0, 'hyperbolic radius, set to None for trainable curvature'),
+        'c': (None, 'hyperbolic radius, set to None for trainable curvature'),
         'r': (2., 'fermi-dirac decoder parameter for lp'),
         't': (1., 'fermi-dirac decoder parameter for lp'),
         'pretrained-embeddings': (None, 'path to pretrained embeddings (.npy file) for Shallow node classification'),
@@ -37,20 +37,23 @@ config_args = {
         'num-layers': (2, 'number of hidden layers in encoder'),
         'bias': (1, 'whether to use bias (1) or not (0)'),
         'act': ('relu', 'which activation function to use (or None for no activation)'),
-        'n-heads': (4, 'number of attention heads for graph attention networks, must be a divisor dim'),
+        'n-heads': (4, 'number of attention heads for graph attention networks, must be a divisor dim, NOT USED'),
         'alpha': (0.2, 'alpha for leakyrelu in graph attention networks'),
         'double-precision': ('0', 'whether to use double precision'),
-        'use-att': (0, 'whether to use hyperbolic attention or not'),
-        'local-agg': (0, 'whether to local tangent space aggregation or not')
+        'use-att': (1, 'whether to use hyperbolic attention or not'),
+        'local-agg': (1, 'whether to local tangent space aggregation or not')
     },
     'data_config': {
-        'dataset': ('cora', 'which dataset to use'),
+        'dataset': ('hrg', 'which dataset to use'),
         'val-prop': (0.05, 'proportion of validation edges for link prediction'),
         'test-prop': (0.1, 'proportion of test edges for link prediction'),
         'use-feats': (1, 'whether to use node features or not'),
         'normalize-feats': (1, 'whether to normalize input node features'),
         'normalize-adj': (1, 'whether to row-normalize the adjacency matrix'),
         'split-seed': (1234, 'seed for data splits (train/test/val)'),
+        'noise-std': (0.0, 'standard deviation of gaussian noise to add to features'),
+        'fraction-remove-edges': (0.0, 'fraction of edges to randomly remove as noise'),
+        'temperature': (0.0, 'only for hrg, which temperature to load')
     }
 }
 

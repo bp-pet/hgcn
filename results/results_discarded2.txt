@@ -1,0 +1,75 @@
+Proper experiments but skipping failed runs not optimal
+
+
+GCN, 20 runs for each result
+	Temperature 0.0
+		Noise -1, result 0.7623401838546069, error runs 0
+		Noise 0.0, result 0.8472872765970294, error runs 0
+		Noise 0.2, result 0.909821239886487, error runs 0
+		Noise 0.4, result 0.8200164533268929, error runs 0
+		Noise 0.6, result 0.8094233033450065, error runs 0
+		Noise 0.8, result 0.7918752264219299, error runs 0
+	Temperature 0.2
+		Noise -1, result 0.7665256628232446, error runs 0
+		Noise 0.0, result 0.8184068483692062, error runs 0
+		Noise 0.2, result 0.9202746697948607, error runs 0
+		Noise 0.4, result 0.8222501466340978, error runs 0
+		Noise 0.6, result 0.791080563371916, error runs 0
+		Noise 0.8, result 0.7472115391754339, error runs 0
+	Temperature 0.4
+		Noise -1, result 0.7228046537811974, error runs 0
+		Noise 0.0, result 0.8317706886845562, error runs 0
+		Noise 0.2, result 0.8365177331581911, error runs 0
+		Noise 0.4, result 0.7718690185775944, error runs 0
+		Noise 0.6, result 0.7404567461062113, error runs 0
+		Noise 0.8, result 0.7672690936385814, error runs 0
+	Temperature 0.6
+		Noise -1, result 0.6592417139432353, error runs 0
+		Noise 0.0, result 0.7781317476868007, error runs 0
+		Noise 0.2, result 0.7872997758639092, error runs 0
+		Noise 0.4, result 0.7632199243027561, error runs 0
+		Noise 0.6, result 0.6774381983727557, error runs 0
+		Noise 0.8, result 0.6357394438469306, error runs 0
+	Temperature 0.8
+		Noise -1, result 0.5295378309114573, error runs 0
+		Noise 0.0, result 0.695146855586416, error runs 0
+		Noise 0.2, result 0.6681419313287446, error runs 0
+		Noise 0.4, result 0.6451911336526719, error runs 0
+		Noise 0.6, result 0.5858115632840908, error runs 0
+		Noise 0.8, result 0.5646110909847172, error runs 0
+HGCN, 5 runs for each result
+	Temperature 0.0
+		Noise -1, result 0.7879181258302139, error runs 4
+		Noise 0.0, result 0.9505026566839755, error runs 0
+		Noise 0.2, result 0.9188645317594494, error runs 1
+		Noise 0.4, result 0.9088378139717425, error runs 1
+		Noise 0.6, result 0.8552899710179931, error runs 3
+		Noise 0.8, result 0.8322930503562372, error runs 3
+	Temperature 0.2
+		Noise -1, result 0.7557113053033284, error runs 3
+		Noise 0.0, result 0.9579832057554812, error runs 0
+		Noise 0.2, result 0.9266369191247985, error runs 0
+		Noise 0.4, result 0.8698371804675956, error runs 2
+		Noise 0.6, result 0.8065048618174707, error runs 2
+		Noise 0.8, result 0.7824016809093541, error runs 0
+	Temperature 0.4
+		Noise -1, result 0.7592844185901045, error runs 2
+		Noise 0.0, result 0.9312441358603867, error runs 0
+		Noise 0.2, result 0.8957050103208857, error runs 0
+		Noise 0.4, result 0.8657804466128731, error runs 0
+		Noise 0.6, result 0.7880559204353537, error runs 1
+		Noise 0.8, result 0.7594790767498593, error runs 0
+	Temperature 0.6
+		Noise -1, result 0.6959148529158217, error runs 1
+		Noise 0.0, result 0.8827053965074179, error runs 0
+		Noise 0.2, result 0.8753548821438247, error runs 0
+		Noise 0.4, result 0.8066124251853433, error runs 0
+		Noise 0.6, result 0.7547362090623231, error runs 1
+		Noise 0.8, result 0.6887771857373912, error runs 1
+	Temperature 0.8
+		Noise -1, result 0.616712957372298, error runs 1
+		Noise 0.0, result 0.8165063263964363, error runs 0
+		Noise 0.2, result 0.7793664211246629, error runs 0
+		Noise 0.4, result 0.7457607105958755, error runs 0
+		Noise 0.6, result 0.571388318641066, error runs 0
+		Noise 0.8, result 0.612124139596667, error runs 2

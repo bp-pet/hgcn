@@ -8,21 +8,30 @@ import numpy as np
 from tqdm import tqdm
 import itertools
 
+import matplotlib.pyplot as plt
 from utils.data_utils import load_data_lp
+
+make_plot = False # TODO maybe remove this option entirely
+plot_frequency = 100
 
 
 def hyperbolicity_sample(G, num_samples=50000):
     curr_time = time.time()
-    hyps = []
+
+    history = []
+    current_max = 0
     for i in tqdm(range(num_samples)):
-        curr_time = time.time()
         node_tuple = np.random.choice(G.nodes(), 4, replace=False)
         try:
-            hyps.append(calculate_hyp(G, node_tuple[0], node_tuple[1], node_tuple[2], node_tuple[3]))
+            hyp = calculate_hyp(G, node_tuple[0], node_tuple[1], node_tuple[2], node_tuple[3])
+            if hyp > current_max:
+                history.append((i, hyp))
+                current_max = hyp
         except Exception as e:
             continue
     print('Time for hyp: ', time.time() - curr_time)
-    return max(hyps)
+    print(history)
+    return current_max
 
 def calculate_hyp(G, a, b, c, d):
         s = []
@@ -41,7 +50,6 @@ def calculate_hyp(G, a, b, c, d):
 def hyperbolicity_full(G):
     curr_time = time.time()
     hyps = []
-    curr_time = time.time()
     for node_tuple in tqdm(list(itertools.product(list(G.nodes()), repeat=4))):
         try:
             hyps.append(calculate_hyp(G, node_tuple[0], node_tuple[1], node_tuple[2], node_tuple[3]))

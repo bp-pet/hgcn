@@ -60,13 +60,16 @@ class HyperbolicGraphConvolution(nn.Module):
     Hyperbolic graph convolution layer: Linear, aggregation, activation.
     """
 
-    def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias, use_att, local_agg):
+    def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias, use_att, local_agg, index):
         super(HyperbolicGraphConvolution, self).__init__()
         self.linear = HypLinear(manifold, in_features, out_features, c_in, dropout, use_bias)
         self.agg = HypAgg(manifold, c_in, out_features, dropout, use_att, local_agg)
         self.hyp_act = HypAct(manifold, c_in, c_out, act)
+        self.index = index
 
     def forward(self, input):
+        with open("curvature\\curvature.txt", 'a') as f:
+            f.write(f"\nLayer {self.index} curvature {self.linear.get_curvature()}")
         x, adj = input # x in node features, adj is adjacency matrix
         h = self.linear.forward(x)
         h = self.agg.forward(h, adj)
@@ -114,6 +117,9 @@ class HypLinear(nn.Module):
         return 'in_features={}, out_features={}, c={}'.format(
             self.in_features, self.out_features, self.c
         )
+
+    def get_curvature(self):
+        return self.c.item()
 
 
 class HypAgg(Module):
