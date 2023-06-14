@@ -22,15 +22,17 @@ except:
 method = "basic" # tsne or cosne or basic
 
 # experiment_id = "lp\\2023_4_18\\35" # {nc or lp}\\{date}\\{number of experiment}
-experiment_id = "lp\\2023_6_7\\1" # {nc or lp}\\{date}\\{number of experiment}
+experiment_id = "lp\\2023_6_8\\89" # {nc or lp}\\{date}\\{number of experiment}
 n_dims = 2 # should be 2
-dataset_name = "hrg"
+dataset_name = "sbm"
 use_embeddings = True # if false then just use original features for plot colors
 
 sample_nodes = None # only take first n nodes
-use_graph = True # whether to plot the graph or just the nodes
+use_graph = False # whether to plot the graph or just the nodes
 
 ###############################################################
+
+y = None
 
 # load colors and graph from dataset
 if dataset_name in ["cora"]:
@@ -52,6 +54,22 @@ elif dataset_name in ["hrg"]:
                 neighbors.append(j)
         adj_new[i] = neighbors
     adj = adj_new
+elif dataset_name in ["sbm"]:
+    # colors_path = os.path.join("data", dataset_name, "labels.npy")
+    graph_path = os.path.join("data", "sbm", "sbm.txt")
+    adjacency_matrix = np.loadtxt(graph_path)
+    num_nodes = adjacency_matrix.shape[0]
+
+    # Create an empty graph adjacency dictionary
+    adj = {}
+
+    # Iterate over the adjacency matrix and populate the adjacency dictionary
+    for node in range(num_nodes):
+        neighbors = []
+        for neighbor in range(num_nodes):
+            if adjacency_matrix[node, neighbor] == 1:
+                neighbors.append(neighbor)
+        adj[node] = neighbors
 else:
     raise Exception("Need to specify paths and types for given dataset.")
 
@@ -68,13 +86,14 @@ if sample_nodes is not None:
     use_graph = False
 
 # replace class with color
-palette = {0: 'r', 1: 'b', 2: 'g', 3: 'y', 4: 'c', 5: 'm', 6: 'tab:brown'}
-new_y = []
-for c in y:
-    new_y.append(palette[c])
-y = np.array(new_y)
+if y is not None:
+    palette = {0: 'r', 1: 'b', 2: 'g', 3: 'y', 4: 'c', 5: 'm', 6: 'tab:brown'}
+    new_y = []
+    for c in y:
+        new_y.append(palette[c])
+    y = np.array(new_y)
 
-# run TSNE
+# run TSNE or not
 if method == "tsne":
     tsne = TSNE(n_dims)
     tsne_result = tsne.fit_transform(X)
@@ -86,10 +105,7 @@ elif method == "basic":
 else:
     raise Exception("Invalid method")
 
-print(X)
 
-# plot result
-# fig = plt.figure()
 
 if n_dims == 2:
     tsne_result_df = pd.DataFrame({'tsne_1': tsne_result[:,0], 'tsne_2': tsne_result[:,1], 'label': y})
@@ -117,3 +133,4 @@ elif n_dims == 3:
 plt.title(method)
 # ax.set_aspect('equal')
 plt.savefig(f"images\\{method}_{dataset_name}.png", dpi=1000)
+plt.show()

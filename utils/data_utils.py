@@ -38,6 +38,11 @@ def load_data(args, datapath):
 
     if args.dataset == 'airport':
         data['features'] = augment(data['adj_train'], data['features'])
+
+    # for i in data:
+    #     print(i, data[i].shape)
+    # print(data["features"])
+    # raise Exception
     return data
 
 
@@ -310,7 +315,7 @@ def load_data_airport(dataset_str, data_path, return_label=False):
 
 # #################### ADDED METHODS ####################################
 
-def load_hrg_data(temperature=None, use_feats=True, data_path="data/hrg/", txt_file_name="hrg", hyp_file_name="hrg"):
+def load_hrg_data(temperature=None, use_feats=True, data_path="data/hrg/", txt_file_name="hrg100", hyp_file_name="hrg100"):
     """
     Load HRG generated data, use 2d hyperbolic coordinates as features and generate label
     based on slicing the hyperbolic disk on angle, currently in 6 pieces.
@@ -433,6 +438,12 @@ def load_sbm_data(blocks=[100, 120, 140, 160, 180], transitions=[[0.9, 0.02, 0.0
     """
     Generate LFR benchmark graph with one-hot features and community id as label.
     """
+    for i in range(5):
+        for j in range(5):
+            if i == j:
+                transitions[i][j] = 1
+            else:
+                transitions[i][j] = 0
     graph = nx.stochastic_block_model(blocks, transitions)
     adj = nx.adjacency_matrix(graph)
 
@@ -444,6 +455,10 @@ def load_sbm_data(blocks=[100, 120, 140, 160, 180], transitions=[[0.9, 0.02, 0.0
     for i, part in enumerate(partition):
         for node in part:
             labels[node, i] = 1
+
+    features = labels
+
+    np.savetxt("data\\sbm\\sbm.txt", nx.to_numpy_array(graph))
 
     return adj, features, labels
 

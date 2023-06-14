@@ -9,6 +9,7 @@ import pickle
 import time
 
 import numpy as np
+import pandas as pd
 import optimizers
 import torch
 import random
@@ -21,9 +22,22 @@ import matplotlib.pyplot as plt
 
 
 def train(args):
-    
-    with open("curvature\\curvature.txt", 'w') as f:
-        f.write("")
+
+    # set manifold ##########################
+    if args.model == "GCN":
+        args.manifold = "Euclidean"
+    elif args.model == "HGCN":
+        args.manifold = "PoincareBall"
+    #########################################
+
+
+    # initialize curvature log ##############
+    if args.record_c:
+        d = {}
+        for i in range(args.num_layers):
+            d[i] = []
+        curvature_log = pd.DataFrame.from_dict(d)
+    #########################################
 
     np.random.seed(args.seed) # is overwritten by split_seed, so doesn't seem to do anything
     torch.manual_seed(args.seed) # for SGD
@@ -118,14 +132,10 @@ def train(args):
                                    'time: {:.4f}s'.format(time.time() - t)
                                    ]))
         if (epoch + 1) % args.eval_freq == 0:
+            # validation only used for early stopping
             model.eval()
             embeddings = model.encode(data['features'], data['adj_train_norm'])
-            # print(embeddings)
             val_metrics = model.compute_metrics(embeddings, data, 'val')
-
-            ################################
-            plt.scatter(epoch, 0.5 * (val_metrics["roc"].item() + val_metrics["ap"].item()), marker='x', c='r')
-            ################################
 
             if (epoch + 1) % args.log_freq == 0:
                 logging.info(" ".join(['Epoch: {:04d}'.format(epoch + 1), format_metrics(val_metrics, 'val')]))
@@ -138,12 +148,28 @@ def train(args):
                 counter = 0
             else:
                 counter += 1
-                if counter == args.patience and epoch > args.min_epochs:
+                if counter >= args.patience and epoch > args.min_epochs:
                     logging.info("Early stopping")
                     break
+        
+        # record curvature and loss ############
+        if args.record_c:
+            for i in model.children():
+                for j in i.children():
+                    d = {}
+                    for i, layer in enumerate(j.children()):
+                        d[i] = [layer.get_curvature()]
+                    curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
+            plt.scatter(epoch, 0.5 * (val_metrics["roc"].item() + val_metrics["ap"].item()), marker='x', c='r')
+        #########################################
     
-    plt.savefig(os.path.join(save_dir, 'loss.png'))
-    plt.clf()
+
+    # save plot of loss and save curvature ###########
+    if args.record_c:
+        curvature_log.to_csv("curvature\\curvature.csv", index=False, header=False)
+        plt.savefig(os.path.join(save_dir, 'loss.png'))
+        plt.clf()
+    ##################################################
 
     logging.info("Optimization Finished!")
     elapsed_time = time.time() - t_total
@@ -155,6 +181,12 @@ def train(args):
     logging.info(" ".join(["Val set results:", format_metrics(best_val_metrics, 'val')]))
     logging.info(" ".join(["Test set results:", format_metrics(best_test_metrics, 'test')]))
     if args.save:
+
+        # save heatmap of embeddings ####################
+        plt.imshow(best_emb.detach().numpy(), cmap='hot', interpolation='nearest')
+        plt.savefig("images\\embedding_heatmap.png")
+        #################################################
+
         np.save(os.path.join(save_dir, 'embeddings.npy'), best_emb.cpu().detach().numpy())
         if hasattr(model.encoder, 'att_adj'):
             filename = os.path.join(save_dir, args.dataset + '_att_adj.p')
@@ -165,9 +197,11 @@ def train(args):
         torch.save(model.state_dict(), os.path.join(save_dir, 'model.pth'))
         logging.info(f"Saved model in {save_dir}")
 
+    # record time, epochs, accuracy #######################
     roc = best_test_metrics["roc"]
     with open("times.txt", 'a') as f:
         f.write(f"\nEpoch {epoch}, time {elapsed_time}, roc {roc}")
+    #######################################################
 
     return best_test_metrics
     
@@ -236,31 +270,29 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.model = "HGCN"
+    args.dataset = "cora"
+    args.task = "lp"
 
-    args.dataset = "hrg"
-
-    if args.model == "GCN":
-        args.manifold = "Euclidean"
-    elif args.model == "HGCN":
-        args.manifold = "Hyperboloid"
+    # args.temperature = 0.2
     
     # args.lr_reduce_freq = 200
     # args.gamma = 0.5
     # args.lr = 0.1
     # args.epochs = 4000
     # args.patience = 300
+    
     # args.weight_decay = 0.001
+    # args.dropout = 0.5
 
     args.use_feats = 1
-
     args.dim = 16
+    args.num_layers = 2
+    args.hidden_dims = 16
 
-    # args.num_layers = 2
-
-    # torch.Size([100, 16])
+    args.record_c = False
 
     for rseed in range(1):
-        args.seed = rseed
+        args.seed = 1234
         train(args)
         # try:
         #     train(args)

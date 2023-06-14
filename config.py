@@ -27,7 +27,8 @@ config_args = {
     'model_config': {
         'task': ('lp', 'which tasks to train on, can be any of [lp, nc]'),
         'model': ('HGCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HGCN]'),
-        'dim': (2, 'embedding dimension'),
+        'dim': (16, 'embedding dimension'),
+        'hidden-dims': (16, 'size of hidden layers; currently only for GCN and HGCN, otherwise hidden dims equal output dim'),
         'manifold': ('Euclidean', 'which manifold to use, can be any of [Euclidean, Hyperboloid, PoincareBall]'),
         'c': (None, 'hyperbolic radius, set to None for trainable curvature'),
         'r': (2., 'fermi-dirac decoder parameter for lp'),
@@ -41,7 +42,7 @@ config_args = {
         'alpha': (0.2, 'alpha for leakyrelu in graph attention networks'),
         'double-precision': ('0', 'whether to use double precision'),
         'use-att': (1, 'whether to use hyperbolic attention or not'),
-        'local-agg': (1, 'whether to local tangent space aggregation or not')
+        'local-agg': (0, 'whether to local tangent space aggregation or not')
     },
     'data_config': {
         'dataset': ('hrg', 'which dataset to use'),
@@ -53,7 +54,8 @@ config_args = {
         'split-seed': (1234, 'seed for data splits (train/test/val)'),
         'noise-std': (0.0, 'standard deviation of gaussian noise to add to features'),
         'fraction-remove-edges': (0.0, 'fraction of edges to randomly remove as noise'),
-        'temperature': (0.0, 'only for hrg, which temperature to load')
+        'temperature': (0.0, 'only for hrg, which temperature to load'),
+        'record-c': (True, 'whether to record learnable curvature')
     }
 }
 

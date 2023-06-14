@@ -27,11 +27,11 @@ def load_graph_from_csv(path):
     return g
 
 
-# path = "C:\\Users\\bp_ms\\Projects\\hgcn\\data\\"
-# dataset = 'cora'
-# data_path = path + dataset
-# data = load_data_lp(dataset, use_feats=False, data_path=data_path)
-# graph = nx.from_scipy_sparse_matrix(data['adj_train'])
+path = "C:\\Users\\bp_ms\\Projects\\hgcn\\data\\"
+dataset = 'hrg'
+data_path = path + dataset
+data = load_data_lp(dataset, use_feats=False, data_path=data_path)
+graph = nx.from_scipy_sparse_matrix(data['adj_train'])
 
 # graph = load_graph_from_csv(path + "anybeat\\anybeat.csv")
 
@@ -49,7 +49,7 @@ def load_graph_from_csv(path):
 # graph = LFR_benchmark_graph(800, 2, 1.1, 0.3, average_degree=6, seed=10)
 # graph = nx.Graph(load_hrg_data()[0])
 # graph = nx.Graph(load_lfr_data()[0])
-graph = nx.Graph(load_sbm_data()[0])
+# graph = nx.Graph(load_sbm_data()[0])
 
 
 relabel_dict = {}
@@ -61,14 +61,15 @@ graph = nx.relabel_nodes(graph, relabel_dict)
 print(f"Number of connected components: {nx.number_connected_components(graph)}")
 
 print('Computing hyperbolicity', graph.number_of_nodes(), graph.number_of_edges())
-# hyp = hyperbolicity.hyperbolicity_sample(graph, num_samples=5000000)
+hyp = hyperbolicity.hyperbolicity_sample(graph, num_samples=500000)
 # hyp = hyperbolicity.hyperbolicity_full(graph)
-# print('Hyp: ', hyp)
-ricci = RicciCurvature(graph)
-print('Ricci:', ricci.get_graph_curvature())
+print('Hyp: ', hyp)
+# ricci = RicciCurvature(graph)
+# print('Ricci:', ricci.get_graph_curvature())
 # ricci.draw_with_curvature()
 
 
 
 # nx.draw(graph)
-# plt.show()
+# plt.suptitle(dataset)
+# plt.savefig(f"curvhist_{dataset}.png")

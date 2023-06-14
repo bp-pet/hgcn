@@ -17,7 +17,8 @@ def get_dim_act(args):
     else:
         act = getattr(F, args.act)
     acts = [act] * (args.num_layers - 1)
-    dims = [args.feat_dim] + ([args.dim] * (args.num_layers - 1))
+    # dims = [args.feat_dim] + ([args.dim] * (args.num_layers - 1))
+    dims = [args.feat_dim] + ([args.hidden_dims] * (args.num_layers - 1))
     if args.task in ['lp', 'rec']:
         dims += [args.dim]
         acts += [act]
@@ -55,6 +56,9 @@ class GraphConvolution(Module):
         return 'input_dim={}, output_dim={}'.format(
                 self.in_features, self.out_features
         )
+
+    def get_curvature(self):
+        return 0.0
 
 
 class Linear(Module):

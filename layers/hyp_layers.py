@@ -21,7 +21,8 @@ def get_dim_act_curv(args):
     else:
         act = getattr(F, args.act)
     acts = [act] * (args.num_layers - 1)
-    dims = [args.feat_dim] + ([args.dim] * (args.num_layers - 1))
+    # dims = [args.feat_dim] + ([args.dim] * (args.num_layers - 1))
+    dims = [args.feat_dim] + ([args.hidden_dims] * (args.num_layers - 1))
     if args.task in ['lp', 'rec']:
         dims += [args.dim]
         acts += [act]
@@ -68,14 +69,15 @@ class HyperbolicGraphConvolution(nn.Module):
         self.index = index
 
     def forward(self, input):
-        with open("curvature\\curvature.txt", 'a') as f:
-            f.write(f"\nLayer {self.index} curvature {self.linear.get_curvature()}")
         x, adj = input # x in node features, adj is adjacency matrix
         h = self.linear.forward(x)
         h = self.agg.forward(h, adj)
         h = self.hyp_act.forward(h)
         output = h, adj
         return output
+
+    def get_curvature(self):
+        return self.linear.get_curvature()
 
 
 class HypLinear(nn.Module):

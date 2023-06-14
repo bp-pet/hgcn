@@ -78,12 +78,15 @@ class RicciCurvature:
             curvature_dict[e] = round(c, 2)
         nx.set_edge_attributes(self.graph, curvature_dict, "curvature")
         plt.hist([curvature_dict[i] for i in curvature_dict], hist_num_bins)
-        plt.show()
-        return result / len(edges)
+        plt.xlabel("Edge curvature")
+        plt.ylabel("Number of edges")
+        avg = result / len(edges)
+        plt.title(f"Average: {avg:.2f}")
+        return avg
     
     def draw_with_curvature(self):
         edge_labels = nx.get_edge_attributes(self.graph, "curvature")
         pos = nx.spring_layout(self.graph)
         nx.draw(self.graph, pos=pos, node_size=10)
         nx.draw_networkx_edge_labels(self.graph, pos=pos, edge_labels=edge_labels)
-        plt.savefig("images\\ricci.png")
+        # plt.savefig("images\\ricci.png")
