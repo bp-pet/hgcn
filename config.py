@@ -15,7 +15,7 @@ config_args = {
         'seed': (1234, 'seed for training'),
         'log-freq': (1, 'how often to compute print train/val metrics (in epochs)'),
         'eval-freq': (1, 'how often to compute val metrics (in epochs)'),
-        'save': (0, '1 to save model and logs and 0 otherwise'),
+        'save': (1, '1 to save model and logs and 0 otherwise'),
         'save-dir': (None, 'path to save training logs and model weights (defaults to logs/task/date/run/)'),
         'sweep-c': (0, ''),
         'lr-reduce-freq': (None, 'reduce lr every lr-reduce-freq or None to keep lr constant'),
@@ -51,6 +51,7 @@ config_args = {
         'normalize-feats': (1, 'whether to normalize input node features'),
         'normalize-adj': (1, 'whether to row-normalize the adjacency matrix'),
         'split-seed': (1234, 'seed for data splits (train/test/val)'),
+        'noise-std': (0, 'standard deviation of noise added to features')
     }
 }
 

@@ -21,13 +21,14 @@ def get_dim_act_curv(args):
     else:
         act = getattr(F, args.act)
     acts = [act] * (args.num_layers - 1)
-    dims = [args.feat_dim] + ([args.dim] * (args.num_layers - 1))
+    dims = [args.feat_dim] + ([args.hidden_dim] * (args.num_layers - 1))
     if args.task in ['lp', 'rec']:
         dims += [args.dim]
         acts += [act]
         n_curvatures = args.num_layers
     else:
         n_curvatures = args.num_layers - 1
+        dims[-1] = args.dim
     if args.c is None:
         # create list of trainable curvature parameters
         curvatures = [nn.Parameter(torch.Tensor([1.])) for _ in range(n_curvatures)]
@@ -74,6 +75,10 @@ class HyperbolicGraphConvolution(nn.Module):
         output = h, adj
         return output
 
+    def get_curvature(self):
+        return self.linear.get_curvature()
+
+
 
 class HypLinear(nn.Module):
     """
@@ -112,6 +117,9 @@ class HypLinear(nn.Module):
         return 'in_features={}, out_features={}, c={}'.format(
             self.in_features, self.out_features, self.c
         )
+
+    def get_curvature(self):
+        return self.c.item()
 
 
 class HypAgg(Module):

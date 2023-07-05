@@ -2,11 +2,13 @@
 import os
 import pickle as pkl
 import sys
+import collections
 
 import networkx as nx
 import numpy as np
 import scipy.sparse as sp
 import torch
+import snap
 
 
 def load_data(args, datapath):
@@ -23,6 +25,9 @@ def load_data(args, datapath):
             data['train_edges'], data['train_edges_false'] = train_edges, train_edges_false
             data['val_edges'], data['val_edges_false'] = val_edges, val_edges_false
             data['test_edges'], data['test_edges_false'] = test_edges, test_edges_false
+    
+    data["features"] = add_random_noise(data["features"], args.noise_std, args.dataset)
+
     data['adj_train_norm'], data['features'] = process(
             data['adj_train'], data['features'], args.normalize_adj, args.normalize_feats
     )
@@ -32,6 +37,24 @@ def load_data(args, datapath):
 
 
 # ############### FEATURES PROCESSING ####################################
+
+def add_random_noise(data, std, dataset_name):
+    """
+    Add Gaussian noise to array with given standard deviation.
+    """
+    if std == 0.0:
+        return data
+    if dataset_name == "hrg":
+        # scale std depending on max radius
+        max_radius = np.sqrt(np.max(data[:, 0] ** 2 + data[:, 1] ** 2))
+        if std < 0:
+            noise = np.random.normal(0, -std * max_radius, data.shape)
+            return noise
+        else: 
+            noise = np.random.normal(0, std * max_radius, data.shape)
+            return data + noise
+    else:
+        raise Exception("Adding noise to given dataset not implemented")
 
 
 def process(adj, features, normalize_adj, normalize_feats):
@@ -136,7 +159,13 @@ def load_data_lp(dataset, use_feats, data_path):
     elif dataset == 'disease_lp':
         adj, features = load_synthetic_data(dataset, use_feats, data_path)[:2]
     elif dataset == 'airport':
-        adj, features = load_data_airport(dataset, data_path, return_label=False)
+        adj, features = load_data_airport(dataset, data_path, return_label=False)  
+    elif dataset == 'hrg':
+        adj, features = load_hrg_data(use_feats)[:2]
+    elif dataset == 'lfr':
+        raise Exception("LFR with LP not implemented")
+    elif dataset == 'sbm':
+        adj, features = load_sbm_data(deterministic=False)[:2]
     else:
         raise FileNotFoundError('Dataset {} is not supported.'.format(dataset))
     data = {'adj_train': adj, 'features': features}
@@ -158,6 +187,12 @@ def load_data_nc(dataset, use_feats, data_path, split_seed):
         elif dataset == 'airport':
             adj, features, labels = load_data_airport(dataset, data_path, return_label=True)
             val_prop, test_prop = 0.15, 0.15
+        elif dataset == 'hrg':
+            raise Exception("HRG with NC not implemented.")
+        elif dataset == 'lfr':
+            raise Exception("LFR with NC not implemented.")
+        elif dataset == 'sbm':
+            raise Exception("SBM with NC not implemented.")
         else:
             raise FileNotFoundError('Dataset {} is not supported.'.format(dataset))
         idx_val, idx_test, idx_train = split_data(labels, val_prop, test_prop, seed=split_seed)
@@ -254,3 +289,149 @@ def load_data_airport(dataset_str, data_path, return_label=False):
     else:
         return sp.csr_matrix(adj), features
 
+
+# new datasets ########################
+
+def load_hrg_data(temperature=None, use_feats=True, data_path="data/hrg/", txt_file_name="hrg100", hyp_file_name="hrg100"):
+    """
+    Load HRG generated data, use 2d hyperbolic coordinates as features and generate label
+    based on slicing the hyperbolic disk on angle, currently in 6 pieces.
+    """
+    if temperature is None or temperature == 0.0:
+        temperature_str = ""
+    else:
+        temperature_str = str(temperature)[0] + str(temperature)[2:]
+    txt_file_name = txt_file_name + temperature_str + ".txt"
+    hyp_file_name = hyp_file_name + temperature_str + ".hyp"
+    with open(os.path.join(data_path, hyp_file_name)) as f:
+        hyp_file_str = f.read()
+    features, angles = hrg_features_array_from_str(hyp_file_str)
+    
+    with open(os.path.join(data_path, txt_file_name), 'r') as f:
+        graph_file_str = f.read()
+    adj = hrg_adjacency_matrix_from_str(graph_file_str)
+
+    num_bins = 6
+    bins = []
+    for i in range(1, num_bins):
+        bins.append(i * 2 * np.pi / num_bins)
+    labels = np.digitize(angles, bins)
+    
+    if not use_feats:
+        # one-hot encoding of nodes
+        features = sp.eye(adj.shape[0])
+
+    return adj, features, labels
+
+def hrg_features_array_from_str(features_str: str):
+    """
+    Make array from features string in format:
+
+    "feature feature ...
+    feature feature ...
+    ..."
+
+    Saves them as cartesian not polar coordinates.
+    """
+    features = []
+    angles = []
+    for line in features_str.split("\n"):
+        if len(line) == 0:
+            break
+        s = line.split(" ")
+        r = float(s[0])
+        theta = float(s[1])
+        x = r * np.cos(theta)
+        y = r * np.sin(theta)
+        features.append((x, y))
+        angles.append(theta)
+    return np.array(features), angles
+
+def hrg_adjacency_matrix_from_str(graph_str: str):
+    """
+    Make nx adjacency matrix from string containing the edges, in the following format:
+    
+    "num_nodes num_edges
+
+    node_id node_id
+    node_id node id
+    ..."
+
+    """
+    edges = []
+    num_nodes = int(graph_str.split("\n")[0].split(" ")[0])
+    for line in graph_str.split("\n")[2:]:
+        if len(line) == 0:
+            break
+        s = line.split(" ")
+        c1 = int(s[0])
+        c2 = int(s[1])
+        edges.append((c1, c2))
+
+    # to dict
+    edges_dict = collections.defaultdict(lambda: [])
+    for edge in edges:
+        edges_dict[edge[0]].append(edge[1])
+        edges_dict[edge[1]].append(edge[0])
+    
+    # sort dict
+    sorted_dict = {}
+    for i in range(num_nodes):    
+        if i in edges_dict:
+            sorted_dict[i] = edges_dict[i]
+        else:
+            sorted_dict[i] = []
+
+    # to nx
+    return nx.adjacency_matrix(nx.from_dict_of_lists(sorted_dict))
+
+
+def load_lfr_data():
+    # TODO add LFR
+    pass
+
+def load_sbm_data(blocks=None, transitions=None, deterministic=False):
+    """
+    Generate LFR benchmark graph with one-hot features and community id as label.
+    """
+
+    # define defaults
+    if blocks is None:
+        blocks = [100, 120, 140, 160, 180]
+    if transitions is None:
+        transitions = [[0.9, 0.02, 0.03, 0.02, 0.03],
+                        [0.02, 0.7, 0.1, 0.1, 0.08],
+                        [0.03, 0.1, 0.9, 0.02, 0.04],
+                        [0.02, 0.1, 0.02, 0.6, 0.26],
+                        [0.03, 0.08, 0.04, 0.26, 0.8]]
+    
+    # set to deterministic
+    if deterministic:
+        for i in range(5):
+            for j in range(5):
+                if i == j:
+                    transitions[i][j] = 1
+                else:
+                    transitions[i][j] = 0
+    
+    graph = nx.stochastic_block_model(blocks, transitions)
+
+    adj = nx.adjacency_matrix(graph)
+
+    features = sp.eye(adj.shape[0])
+
+    partition = graph.graph["partition"]
+    labels = np.zeros((len(graph), len(blocks)))
+
+    for i, part in enumerate(partition):
+        for node in part:
+            labels[node, i] = 1
+
+    features = labels
+
+    np.savetxt("data\\sbm\\sbm.txt", nx.to_numpy_array(graph))
+
+    return adj, features, labels
+
+def load_road_data():
+    pass

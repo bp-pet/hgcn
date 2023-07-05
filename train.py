@@ -1,6 +1,3 @@
-from __future__ import division
-from __future__ import print_function
-
 import datetime
 import json
 import logging
@@ -9,6 +6,8 @@ import pickle
 import time
 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import optimizers
 import torch
 from config import parser
@@ -18,6 +17,23 @@ from utils.train_utils import get_dir_name, format_metrics
 
 
 def train(args):
+
+    # set manifold ##########################
+    if args.model == "GCN":
+        args.manifold = "Euclidean"
+    elif args.model == "HGCN":
+        args.manifold = "PoincareBall"
+    #########################################
+
+
+    # initialize curvature log ##############
+    if args.record_c:
+        d = {}
+        for i in range(args.num_layers):
+            d[i] = []
+        curvature_log = pd.DataFrame.from_dict(d)
+    #########################################
+
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     if int(args.double_precision):
@@ -31,7 +47,7 @@ def train(args):
         if not args.save_dir:
             dt = datetime.datetime.now()
             date = f"{dt.year}_{dt.month}_{dt.day}"
-            models_dir = os.path.join(os.environ['LOG_DIR'], args.task, date)
+            models_dir = os.path.join("logs", args.task, date)
             save_dir = get_dir_name(models_dir)
         else:
             save_dir = args.save_dir
@@ -45,7 +61,7 @@ def train(args):
     logging.info("Using seed {}.".format(args.seed))
 
     # Load data
-    data = load_data(args, os.path.join(os.environ['DATAPATH'], args.dataset))
+    data = load_data(args, os.path.join("data", args.dataset))
     args.n_nodes, args.feat_dim = data['features'].shape
     if args.task == 'nc':
         Model = NCModel
@@ -56,10 +72,10 @@ def train(args):
         args.nb_edges = len(data['train_edges'])
         if args.task == 'lp':
             Model = LPModel
-        else:
-            Model = RECModel
-            # No validation for reconstruction task
-            args.eval_freq = args.epochs + 1
+        # else:
+        #     Model = RECModel
+        #     # No validation for reconstruction task
+        #     args.eval_freq = args.epochs + 1
 
     if not args.lr_reduce_freq:
         args.lr_reduce_freq = args.epochs
@@ -123,12 +139,39 @@ def train(args):
                 counter = 0
             else:
                 counter += 1
-                if counter == args.patience and epoch > args.min_epochs:
+                if counter >= args.patience and epoch > args.min_epochs:
                     logging.info("Early stopping")
                     break
+    
+        # record curvature and loss ############
+        if args.record_c:
+            for i in model.children():
+                for j in i.children():
+                    d = {}
+                    for i, layer in enumerate(j.children()):
+                        try:
+                            d[i] = [layer.get_curvature()]
+                        except AttributeError:
+                            d[i] = [0.0]
+                    d["loss"] = [val_metrics["loss"].item()]
+                    curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
+        if args.record_loss:
+            plt.scatter(epoch, 0.5 * (val_metrics["roc"].item() + val_metrics["ap"].item()), marker='x', c='r')
+        #########################################
+    
+
+    # save plot of loss and save curvature ###########
+    if args.record_c:
+        curvature_log.to_csv("curvature\\curvature.csv", index=False, header=True)
+    if args.record_loss:
+        plt.savefig(os.path.join('curvature\\loss.png'))
+        plt.clf()
+    ##################################################
+
 
     logging.info("Optimization Finished!")
-    logging.info("Total time elapsed: {:.4f}s".format(time.time() - t_total))
+    elapsed_time = time.time() - t_total
+    logging.info("Total time elapsed: {:.4f}s".format(elapsed_time))    
     if not best_test_metrics:
         model.eval()
         best_emb = model.encode(data['features'], data['adj_train_norm'])
@@ -136,6 +179,13 @@ def train(args):
     logging.info(" ".join(["Val set results:", format_metrics(best_val_metrics, 'val')]))
     logging.info(" ".join(["Test set results:", format_metrics(best_test_metrics, 'test')]))
     if args.save:
+
+        # save heatmap of embeddings ####################
+        if args.record_heatmap:
+            plt.imshow(best_emb.detach().numpy(), cmap='hot', interpolation='nearest')
+            plt.savefig("curvature\\embedding_heatmap.png")
+        #################################################
+
         np.save(os.path.join(save_dir, 'embeddings.npy'), best_emb.cpu().detach().numpy())
         if hasattr(model.encoder, 'att_adj'):
             filename = os.path.join(save_dir, args.dataset + '_att_adj.p')
@@ -145,7 +195,51 @@ def train(args):
         json.dump(vars(args), open(os.path.join(save_dir, 'config.json'), 'w'))
         torch.save(model.state_dict(), os.path.join(save_dir, 'model.pth'))
         logging.info(f"Saved model in {save_dir}")
+    
+    # record time, epochs, accuracy #######################
+    if args.record_result:
+        if "roc" in best_test_metrics:
+            roc = best_test_metrics["roc"]
+            with open("curvature\\times.txt", 'a') as f:
+                f.write(f"\nEpoch {epoch}, time {elapsed_time}, roc {roc}")
+        else:
+            f1 = best_test_metrics["f1"]
+            with open("curvature\\times.txt", 'a') as f:
+                f.write(f"\nEpoch {epoch}, time {elapsed_time}, f1 {f1}")
+    #######################################################
+
+    return best_test_metrics
+
+# TODO methods for testing noise etc
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    args.dataset = "sbm"
+    args.model = "HGCN"
+    args.task = "lp"
+
+    args.dim = 16
+    args.hidden_dim = args.dim
+    args.num_layers = 2
+
+    args.record_c = True
+    args.record_loss = False
+    args.record_heatmap = False
+    args.record_result = True
+
+    # args.dropout = 0.5
+    # args.dropout = 0.2
+    # args.weight_decay = 0.001
+    # args.normalize_feats = False
+
+    # args.seed = 2
+
+    # args.min_epochs = 1000
+
+    args.c = None
+    # args.use_att = True
+
+
     train(args)

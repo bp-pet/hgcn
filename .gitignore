@@ -1,0 +1,13 @@
+**/__pycache__/
+logs/
+venv/
+venv-cosne/
+wheels/
+cosne/
+*.csv
+*.png
+data/anybeat/
+data/academia/
+data/hrg/*.txt
+data/hrg/*.hyp
+data/sbm/
