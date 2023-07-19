@@ -15,6 +15,8 @@ from models.base_models import NCModel, LPModel
 from utils.data_utils import load_data
 from utils.train_utils import get_dir_name, format_metrics
 
+from curvature.plot_c import main as plot_c
+
 
 def train(args):
 
@@ -27,11 +29,13 @@ def train(args):
 
 
     # initialize curvature log ##############
-    if args.record_c:
+    if args.record_c_and_loss:
         d = {}
         for i in range(args.num_layers):
             d[i] = []
         curvature_log = pd.DataFrame.from_dict(d)
+        if args.task == "nc": # if task is nc then last layer is linear non-hyp.
+            curvature_log = curvature_log.drop(columns=[args.num_layers - 1])
     #########################################
 
     np.random.seed(args.seed)
@@ -144,28 +148,26 @@ def train(args):
                     break
     
         # record curvature and loss ############
-        if args.record_c:
+        if args.record_c_and_loss:
+            d = {}
             for i in model.children():
                 for j in i.children():
-                    d = {}
                     for i, layer in enumerate(j.children()):
+                        if isinstance(layer, torch.nn.Linear):
+                            continue
                         try:
                             d[i] = [layer.get_curvature()]
                         except AttributeError:
                             d[i] = [0.0]
-                    d["loss"] = [val_metrics["loss"].item()]
-                    curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
-        if args.record_loss:
-            plt.scatter(epoch, 0.5 * (val_metrics["roc"].item() + val_metrics["ap"].item()), marker='x', c='r')
+            d["loss"] = [val_metrics["loss"].item()]
+            curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
         #########################################
     
 
     # save plot of loss and save curvature ###########
-    if args.record_c:
+    if args.record_c_and_loss:
         curvature_log.to_csv("curvature\\curvature.csv", index=False, header=True)
-    if args.record_loss:
-        plt.savefig(os.path.join('curvature\\loss.png'))
-        plt.clf()
+        json.dump(vars(args), open("curvature\\configs.json", 'w'))
     ##################################################
 
 
@@ -181,7 +183,7 @@ def train(args):
     if args.save:
 
         # save heatmap of embeddings ####################
-        if args.record_heatmap:
+        if args.make_embedding_heatmap:
             plt.imshow(best_emb.detach().numpy(), cmap='hot', interpolation='nearest')
             plt.savefig("curvature\\embedding_heatmap.png")
         #################################################
@@ -197,7 +199,7 @@ def train(args):
         logging.info(f"Saved model in {save_dir}")
     
     # record time, epochs, accuracy #######################
-    if args.record_result:
+    if args.record_performance:
         if "roc" in best_test_metrics:
             roc = best_test_metrics["roc"]
             with open("curvature\\times.txt", 'a') as f:
@@ -210,13 +212,11 @@ def train(args):
 
     return best_test_metrics
 
-# TODO methods for testing noise etc
-
 
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    args.dataset = "sbm"
+    args.dataset = "hrg_n1000"
     args.model = "HGCN"
     args.task = "lp"
 
@@ -224,22 +224,32 @@ if __name__ == '__main__':
     args.hidden_dim = args.dim
     args.num_layers = 2
 
-    args.record_c = True
-    args.record_loss = False
-    args.record_heatmap = False
-    args.record_result = True
+    args.record_c_and_loss = True
+    args.make_embedding_heatmap = False
+    args.record_performance = True
 
+    # args.lr = 0.0001
+    # args.lr_reduce_freq = 100
+
+    # for cora lp
     # args.dropout = 0.5
-    # args.dropout = 0.2
     # args.weight_decay = 0.001
+
+    # for disease_lp
     # args.normalize_feats = False
 
     # args.seed = 2
 
     # args.min_epochs = 1000
+    # args.epochs = 80
 
     args.c = None
     # args.use_att = True
 
+    args.save = False
+    args.log_freq = 10
 
     train(args)
+
+    if args.record_c_and_loss:
+        plot_c()

@@ -3,6 +3,7 @@ import os
 import pickle as pkl
 import sys
 import collections
+import subprocess
 
 import networkx as nx
 import numpy as np
@@ -160,12 +161,16 @@ def load_data_lp(dataset, use_feats, data_path):
         adj, features = load_synthetic_data(dataset, use_feats, data_path)[:2]
     elif dataset == 'airport':
         adj, features = load_data_airport(dataset, data_path, return_label=False)  
-    elif dataset == 'hrg':
-        adj, features = load_hrg_data(use_feats)[:2]
+    elif dataset[:3] == 'hrg':
+        adj, features = load_hrg_data(dataset, use_feats)[:2]
     elif dataset == 'lfr':
         raise Exception("LFR with LP not implemented")
     elif dataset == 'sbm':
         adj, features = load_sbm_data(deterministic=False)[:2]
+    elif dataset == 'roadnet_ca':
+        adj, features = load_roadnet_ca()
+    elif dataset == 'enschede_road':
+        adj, features = load_enschede_road()
     else:
         raise FileNotFoundError('Dataset {} is not supported.'.format(dataset))
     data = {'adj_train': adj, 'features': features}
@@ -292,34 +297,67 @@ def load_data_airport(dataset_str, data_path, return_label=False):
 
 # new datasets ########################
 
-def load_hrg_data(temperature=None, use_feats=True, data_path="data/hrg/", txt_file_name="hrg100", hyp_file_name="hrg100"):
+def load_hrg_data(name, use_feats=True):
     """
-    Load HRG generated data, use 2d hyperbolic coordinates as features and generate label
-    based on slicing the hyperbolic disk on angle, currently in 6 pieces.
+    Generate and load HRG data.
+
+    Parameters are inputted in the dataset name: for example hrg_n1000_t02 will generate
+    a HRG with 1000 nodes and temperature 0.2.
+
+    If parameters are not specified, defaults are n = 100 and t = 0.0.
+
+    Classes are also generated based on splitting disk in 6.
     """
-    if temperature is None or temperature == 0.0:
-        temperature_str = ""
+
+    # read parameters
+    n = 100
+    t = 0.0
+    params = name.split("_")
+    if len(params) == 1:
+        n = 100
+        t = 0
     else:
-        temperature_str = str(temperature)[0] + str(temperature)[2:]
-    txt_file_name = txt_file_name + temperature_str + ".txt"
-    hyp_file_name = hyp_file_name + temperature_str + ".hyp"
-    with open(os.path.join(data_path, hyp_file_name)) as f:
-        hyp_file_str = f.read()
-    features, angles = hrg_features_array_from_str(hyp_file_str)
+        for param in params[1:]:
+            if param[0] == "n":
+                n = int(param[1:])
+            elif param[0] == "t":
+                t_raw = param[1:]
+                if t_raw[0] != '0' or len(t_raw) < 2:
+                    raise Exception("Temperature for HRG must be given in format 0xxx... for 0.xxx; or 00 for temperature 0")
+                t_raw = "0." + t_raw[1:]
+                t = float(t_raw)
+            else:
+                raise Exception(f"Invalid parameter for HRG: {param[0]}")
     
-    with open(os.path.join(data_path, txt_file_name), 'r') as f:
+    # generate data
+    alpha=0.75
+    deg=10
+    file="data\hrg\hrg"
+    edge=1
+    coord=1
+    rseed=12
+    aseed=130
+    sseed=1400
+    print(f"Generating HRG with n = {n} and t = {t}")
+    subprocess.call("C:\Program Files\girgs\genhrg" + f" -n {n} -alpha {alpha} -t {t} -deg {deg} -file {file} -edge {edge} -coord {coord} -rseed {rseed} -aseed {aseed} -sseed {sseed}")
+
+    # load data
+    with open("data\\hrg\\hrg.txt") as f:
         graph_file_str = f.read()
     adj = hrg_adjacency_matrix_from_str(graph_file_str)
+    with open("data\\hrg\\hrg.hyp") as f:
+        hyp_file_str = f.read()
+    features, angles = hrg_features_array_from_str(hyp_file_str)
+    if not use_feats:
+        features = sp.eye(adj.shape[0])
+    
 
+    # generate labels
     num_bins = 6
     bins = []
     for i in range(1, num_bins):
         bins.append(i * 2 * np.pi / num_bins)
     labels = np.digitize(angles, bins)
-    
-    if not use_feats:
-        # one-hot encoding of nodes
-        features = sp.eye(adj.shape[0])
 
     return adj, features, labels
 
@@ -397,24 +435,27 @@ def load_sbm_data(blocks=None, transitions=None, deterministic=False):
 
     # define defaults
     if blocks is None:
-        blocks = [100, 120, 140, 160, 180]
+        blocks = [100, 120, 140, 160]
     if transitions is None:
-        transitions = [[0.9, 0.02, 0.03, 0.02, 0.03],
-                        [0.02, 0.7, 0.1, 0.1, 0.08],
-                        [0.03, 0.1, 0.9, 0.02, 0.04],
-                        [0.02, 0.1, 0.02, 0.6, 0.26],
-                        [0.03, 0.08, 0.04, 0.26, 0.8]]
+        transitions = [[0.9, 0.02, 0.03, 0.04],
+                        [0.02, 0.8, 0.05, 0.06],
+                        [0.03, 0.05, 0.9, 0.02],
+                        [0.04, 0.06, 0.02, 0.8]]
     
-    # set to deterministic
+    # set to deterministic if given
     if deterministic:
-        for i in range(5):
-            for j in range(5):
+        for i in range(len(transitions)):
+            for j in range(len(transitions)):
                 if i == j:
                     transitions[i][j] = 1
                 else:
                     transitions[i][j] = 0
     
-    graph = nx.stochastic_block_model(blocks, transitions)
+    graph = nx.stochastic_block_model(blocks, transitions, seed=1)
+
+    # nx.draw(graph, node_size=20)
+    # import matplotlib.pyplot as plt
+    # plt.show()
 
     adj = nx.adjacency_matrix(graph)
 
@@ -429,9 +470,73 @@ def load_sbm_data(blocks=None, transitions=None, deterministic=False):
 
     features = labels
 
-    np.savetxt("data\\sbm\\sbm.txt", nx.to_numpy_array(graph))
+    # np.savetxt("data\\sbm\\sbm.txt", nx.to_numpy_array(graph))
 
     return adj, features, labels
 
-def load_road_data():
-    pass
+def load_roadnet_ca():
+    # TODO remove method
+    
+    with open("data\\roadnet_ca\\roadNet-CA.txt", 'r') as f:
+        content = f.read()
+
+    edges = []
+    for line in content.split("\n"):
+        if len(line) == 0 or line[0] == '#':
+            continue
+        vs = line.split("\t")
+        v1, v2 = int(vs[0]), int(vs[1])
+        edges.append((v1, v2))
+
+    graph = nx.from_edgelist(edges)
+    adj = nx.adjacency_matrix(graph)
+    
+    features = sp.eye(len(edges))
+
+    return adj, features
+
+def load_enschede_road():
+    """
+    Enschede road dataset previously generated using osmnx, only loaded here.
+    """
+    with open('data\\enschede_road\\enschede_adj.txt', 'r') as file:
+        text = file.read()
+    adj_dict = {}
+    for line in text.split("\n"):
+        nodes = line.split(" ")[:-1]
+        for i, node in enumerate(nodes):
+            nodes[i] = int(node)
+        if len(nodes) == 0:
+            continue
+        adj_dict[nodes[0]] = nodes[1:]
+    adj = None
+    graph = nx.from_dict_of_lists(adj_dict)
+    adj = nx.adj_matrix(graph)
+
+    with open('data\\enschede_road\\enschede_pos.txt', 'r') as file:
+        text = file.read()
+    features_list = []
+    node_positions = {}
+    counter = 0
+    for line in text.split("\n"):
+        if len(line) == 0:
+            continue
+        pos = line.split(" ")[1:3]
+        pos = [float(pos[0]), float(pos[1])]
+        features_list.append(pos)
+        node_positions[counter] = pos
+        counter += 1
+    features = np.array(features_list)  
+
+    # TODO remove this part and node_positions and counter
+    # nx.draw_networkx(graph, pos=node_positions, with_labels=False, node_size=1)
+    # import matplotlib.pyplot as plt
+    # plt.show()
+
+    return adj, features
+
+if __name__=="__main__":
+    adj, features, labels = load_synthetic_data("disease_lp", True, "data\\disease_lp")
+    print(adj.shape)
+    adj, features, labels = load_synthetic_data("disease_nc", True, "data\\disease_nc")
+    print(adj.shape)

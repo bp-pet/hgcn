@@ -25,9 +25,7 @@ def hyperbolicity_sample(G, num_samples=50000):
         except Exception as e:
             continue
     print('Time for hyp: ', time.time() - curr_time)
-    print("History: ", history)
-    print("Final value:", current_max)
-    return current_max
+    return current_max, history
 
 def calculate_hyp(G, a, b, c, d):
         s = []

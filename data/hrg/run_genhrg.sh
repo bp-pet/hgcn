@@ -1,12 +1,15 @@
+# file used for manually generating hrg; not needed if using data_utils
+
+
 # model paraameters
 # number of nodes, alpha, temperature, average degree
 n=100
 alpha=0.75
-t=0.8
+t=0
 deg=10
 # output settings
 # filename, save adj. list, save hyp. coordinates
-file="data\hrg\hrg100"
+file="data\hrg\hrg"
 edge=1
 coord=1
 # random seeds

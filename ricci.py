@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 
-class RicciCurvature:
+class EdgeCurvature:
 
     def __init__(self, graph):
         self.graph = graph
@@ -65,7 +65,7 @@ class RicciCurvature:
         return (max(occurences[i] for i in occurences))
 
 
-    def get_graph_curvature(self, sample_num=None, hist_num_bins=None):
+    def get_curvature(self, sample_num=None, hist_num_bins=None):
         """
         Set the curvature of each edge as an attribute and return the average curvature.
         """
@@ -77,12 +77,8 @@ class RicciCurvature:
             result += c
             curvature_dict[e] = round(c, 2)
         nx.set_edge_attributes(self.graph, curvature_dict, "curvature")
-        plt.hist([curvature_dict[i] for i in curvature_dict], hist_num_bins)
-        plt.xlabel("Edge curvature")
-        plt.ylabel("Number of edges")
         avg = result / len(edges)
-        plt.title(f"Average: {avg:.2f}")
-        return avg
+        return avg, curvature_dict
     
     def draw_with_curvature(self):
         edge_labels = nx.get_edge_attributes(self.graph, "curvature")
