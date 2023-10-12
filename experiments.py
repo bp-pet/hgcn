@@ -1,16 +1,57 @@
+"""
+Module for running experiments.
+"""
 import numpy as np
+import pandas as pd
 
 from train import train
 from config import parser
 
+from curvature.plot_c import main as plot_c
 
-save_dir = "results\\experiments.txt"
+num_runs = {"GCN": 10, "HGCN": 10}
 
-num_runs = {"GCN": 20, "HGCN": 5}
+# Ts = [0.0, 0.2, 0.4, 0.6, 0.8, -1]
+Ts = [0, 1]
+alphas = [0.0, 0.2, 0.4, 0.6, 0.8, -1]
 
-temps = [0.0, 0.2, 0.4, 0.6, 0.8]
-noises = [0.0, 0.2, 0.4, 0.6, 0.8, -1]
+# Ts = [0.0]
+# alphas = [0.0]
 
+dims = [2, 16, 128, 1024]
+
+
+def dimensionality_experiments(args):
+
+    for model in ["GCN", "HGCN"]:
+
+        # for SBM experiments
+        if model == "GCN":
+            args.dropout = 0.2
+        else:
+            args.dropout = 0
+
+        args.model = model
+        print(model)
+        for dim in dims:
+            print(f"\tDimension {dim}")
+            args.dim = dim
+            avg, std = multiple_runs(args, 5)
+            avg = round(avg, 3) * 100
+            std = round(std, 3) * 100
+            with open("results\\dimensionality.txt", 'a') as f:
+                f.write(f"\n{model}, {dim} dimensions: {avg} +- {std}")
+    
+
+
+
+def std(l):
+    m = sum(l) / len(l)
+    s = 0
+    for i in l:
+        s += (i - m) ** 2 / (len(l) - 1)
+    s = np.sqrt(s)
+    return s
 
 def multiple_runs(args, n=20):
     """
@@ -28,43 +69,103 @@ def multiple_runs(args, n=20):
         metric = "accuracy" # might not be correct
 
     results = []
-    error_counter = 0
     for i in range(n):
-        print(f"Run {i + 1} of {n}")
+        print(f"\tRun {i + 1} of {n}")
         args.seed = (i + 1) * initial_seed
-        while True:
-            try:
-                results.append(train(args)[metric])
-            except Exception as e:
-                print(e)
-                error_counter += 1
-            finally:
-                break
+        try:
+            results.append(train(args)[metric])
+        except RuntimeError as e:
+            print("Error")
+            with open("error_log.txt", 'a') as f:
+                f.write(f"\n{args.model}, {args.dataset}, {args.noise_std}")
     if len(results) == 0:
         return 0, n
     avg = sum(results) / len(results)
-    return avg, error_counter
+    args.seed = initial_seed
+    return avg, std(results)
 
 def vary_params(args):
     """
     Run configurations with array of parameters, save results to file.
     """
-    for model in ["GCN", "HGCN"]: # change if GCN also wanted
-        with open(save_dir, 'a') as f:
-            f.write(f"{model}, {num_runs} runs for each result\n")
-        for temp in temps:
-            with open(save_dir, 'a') as f:
-                f.write(f"\tTemperature {temp}\n")
-            args.dataset = f"hrg_n1000_t{temp}"
-            for noise in noises:
-                args.noise_std = noise
-                avg, errors = multiple_runs(args, n=num_runs[model])
-                with open(save_dir, 'a') as f:
-                    f.write(f"\t\tNoise {noise}, result {avg}, error runs {errors}\n")
+    results = {}
+    baseline = None
+    print(args.model)
+    for T in Ts:
+        temp = {}
+        args.dataset = f"hrg_n1000_t{T}"
+        for alpha in alphas:
+            args.noise_std = alpha
+            print(f"  Alpha = {alpha}, T = {T}")
+            avg, _ = multiple_runs(args, n=num_runs[args.model])
+            
+            temp[alpha] = avg
 
+            if T == 0 and alpha == 0:
+                baseline = avg
+                rel = "-"
+            else:
+                rel = avg / baseline - 1
+            
+            temp[f"{alpha} rel"] = rel
+        results[T] = temp
+    results = pd.DataFrame.from_dict(results)
+    return results
+
+
+def df_to_latex(df, model):
+
+    # delete labels of rel rows
+    row_mapping = {}
+    for i in df.iloc:
+        if type(i.name) == str and "rel" in i.name:
+            row_mapping[i.name] = ""
+        else:
+            row_mapping[i.name] = i.name
+    df.rename(index=row_mapping, inplace=True)
+
+    df = df.round(3)
+
+    latex = df.to_latex()
+
+    with open(f"results\\experiments_{args.model}.txt", "w") as text_file:
+        text_file.write(latex)
 
 if __name__=="__main__":
     args = parser.parse_args()
 
-    args.log_freq=500
+    args.log_info = False
     args.save = 0
+
+    args.model = "HGCN"
+    args.dataset = "hrg_n1000"
+    args.lr = 0.1
+
+    # args.weight_decay = 0.0001
+
+    args.dim = 16
+    args.hidden_dim = 16
+    args.num_layers = 2
+    
+    # multiple_runs(args, n=5)
+
+    dimensionality_experiments(args)
+
+
+    # for noise to late
+
+    # args.model = "GCN"
+    # results = vary_params(args)
+    # latex = df_to_latex(results, args.model)
+
+    # args.model = "HGCN"
+    # results = vary_params(args)
+    # latex = df_to_latex(results, args.model)
+
+
+    # plot_c(True)
+
+    import winsound
+    duration = 1000  # milliseconds
+    freq = 1200  # Hz
+    winsound.Beep(freq, duration)

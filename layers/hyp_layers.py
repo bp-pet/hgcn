@@ -37,6 +37,12 @@ def get_dim_act_curv(args):
         curvatures = [torch.tensor([args.c]) for _ in range(n_curvatures)]
         if not args.cuda == -1:
             curvatures = [curv.to(args.device) for curv in curvatures]
+    # curvatures = []
+    # for i in args.c[1:]:
+    #     if i is None:
+    #         curvatures.append(nn.Parameter(torch.Tensor([1.])))
+    #     else:
+    #         curvatures.append(torch.tensor([i]))
     return dims, acts, curvatures
 
 
@@ -75,8 +81,11 @@ class HyperbolicGraphConvolution(nn.Module):
         output = h, adj
         return output
 
-    def get_curvature(self):
+    def get_in_curvature(self):
         return self.linear.get_curvature()
+    
+    def get_out_curvature(self):
+        return self.hyp_act.get_out_curvature()
 
 
 
@@ -185,3 +194,6 @@ class HypAct(Module):
         return 'c_in={}, c_out={}'.format(
             self.c_in, self.c_out
         )
+    
+    def get_out_curvature(self):
+        return self.c_out.item()

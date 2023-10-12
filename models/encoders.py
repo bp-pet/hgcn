@@ -100,6 +100,7 @@ class HGCN(Encoder):
         self.manifold = getattr(manifolds, args.manifold)()
         assert args.num_layers > 1
         dims, acts, self.curvatures = hyp_layers.get_dim_act_curv(args)
+        # self.curvatures = [self.c] + self.curvatures
         self.curvatures.append(self.c)
         hgc_layers = []
         for i in range(len(dims) - 1):

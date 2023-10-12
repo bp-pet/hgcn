@@ -22,14 +22,16 @@ config_args = {
         'gamma': (0.5, 'gamma for lr scheduler'),
         'print-epoch': (True, ''),
         'grad-clip': (None, 'max norm for gradient clipping, or None for no gradient clipping'),
-        'min-epochs': (100, 'do not early stop before min-epochs')
+        'min-epochs': (100, 'do not early stop before min-epochs'),
+        'log-info': (True, 'whether to print info logs at all')
     },
     'model_config': {
-        'task': ('nc', 'which tasks to train on, can be any of [lp, nc]'),
+        'task': ('lp', 'which tasks to train on, can be any of [lp, nc]'),
         'model': ('GCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HyperGCN]'),
-        'dim': (128, 'embedding dimension'),
+        'dim': (16, 'embedding dimension'),
+        'hidden_dim': (16, 'hidden layer dimension'),
         'manifold': ('Euclidean', 'which manifold to use, can be any of [Euclidean, Hyperboloid, PoincareBall]'),
-        'c': (1.0, 'hyperbolic radius, set to None for trainable curvature'),
+        'c': (None, 'hyperbolic radius, set to None for trainable curvature'),
         'r': (2., 'fermi-dirac decoder parameter for lp'),
         't': (1., 'fermi-dirac decoder parameter for lp'),
         'pretrained-embeddings': (None, 'path to pretrained embeddings (.npy file) for Shallow node classification'),

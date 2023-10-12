@@ -1,18 +1,1117 @@
 
-Epoch 223, time 123.03764867782593, roc 0.9096961426426481
-Epoch 348, time 180.39805674552917, roc 0.912511837078591
-Epoch 375, time 195.16873741149902, roc 0.8661969041763735
-Epoch 1524, time 10139.421103715897, roc 0.9161772807304963
-Epoch 347, time 157.86661911010742, f1 0.724
-Epoch 347, time 156.82908034324646, f1 0.724
-Epoch 223, time 111.0089464187622, roc 0.9096961426426481
-Epoch 79, time 46.34895610809326, roc 0.912238189025993
-Epoch 315, time 163.86594581604004, roc 0.9353902545286952
-Epoch 711, time 392.4040467739105, roc 0.9348825653784805
-Epoch 3876, time 57351.54527068138, roc 0.9293843999006225
-Epoch 590, time 61.18526482582092, roc 0.9711085617679025
-Epoch 590, time 76.39753651618958, roc 0.9711085617679025
-Epoch 590, time 74.06412053108215, roc 0.9711085617679025
-Epoch 590, time 75.30288481712341, roc 0.9711085617679025
-Epoch 590, time 75.27745461463928, roc 0.9711085617679025
-Epoch 590, time 75.0454363822937, roc 0.9711085617679025
+cora hgcn basic
+Epoch 223, time 109.47559309005737, roc 0.9096961426426481
+Epoch 150, time 73.43157958984375, roc 0.9149782701842443
+Epoch 148, time 80.21953296661377, roc 0.9120689593092548
+Epoch 153, time 88.50110960006714, roc 0.9114820562490774
+Epoch 228, time 123.43759608268738, roc 0.913199557842357
+
+hrg hgcn basic
+Epoch 590, time 67.67602610588074, roc 0.9711085617679025
+Epoch 777, time 91.01023769378662, roc 0.9744256430382804
+Epoch 498, time 56.693973779678345, roc 0.9682480980557904
+Epoch 496, time 56.771852016448975, roc 0.971017992996015
+Epoch 1420, time 154.90260434150696, roc 0.9772823330515639
+
+hrg hgcn sch400-0.5
+Epoch 1170, time 125.84896540641785, roc 0.9763766453326893
+Epoch 502, time 53.880794048309326, roc 0.9679612969448135
+Epoch 498, time 56.16310238838196, roc 0.9682480980557904
+Epoch 496, time 52.23912954330444, roc 0.971017992996015
+Epoch 1097, time 119.9918532371521, roc 0.9744369641347663
+
+hrg hgcn sch200-0.5
+Epoch 688, time 73.8998773097992, roc 0.9677575172080667
+Epoch 489, time 52.53087306022644, roc 0.9651234754256732
+Epoch 724, time 76.31841111183167, roc 0.967138630600169
+Epoch 418, time 44.20510697364807, roc 0.9701575896630842
+Epoch 511, time 53.80257558822632, roc 0.9676141166525781
+
+hrg hgcn sch200-0.5 lr0.1
+Epoch 502, time 55.474902868270874, roc 0.9730029585798817
+Epoch 503, time 57.901047706604004, roc 0.9708142132592683
+Epoch 488, time 53.16804790496826, roc 0.9703613693998309
+Epoch 273, time 28.959078073501587, roc 0.969893430745079
+Epoch 433, time 46.540637493133545, roc 0.9696141770317596
+
+hrg gcn basic
+Epoch 725, time 35.98051691055298, roc 0.859369339451757
+Epoch 317, time 16.100704431533813, roc 0.8492633739886488
+Epoch 494, time 26.101617574691772, roc 0.9008385158797247
+Epoch 459, time 24.52008080482483, roc 0.8579428812945296
+Epoch 373, time 19.805418252944946, roc 0.8417650344161334
+Epoch 291, time 14.82641863822937, roc 0.8108961779978264
+Epoch 196, time 10.063190221786499, roc 0.8161038823813549
+Epoch 546, time 30.808690071105957, roc 0.8867588455500541
+Epoch 112, time 6.034662485122681, roc 0.7938994384736143
+Epoch 454, time 24.70000410079956, roc 0.8919665499335829
+
+hrg gcn lr0.1
+Epoch 188, time 9.676151514053345, roc 0.8419122086704504
+Epoch 479, time 23.60563611984253, roc 0.8544861731674918
+Epoch 320, time 15.910784482955933, roc 0.8872682948919213
+Epoch 337, time 16.757439374923706, roc 0.8741886547518415
+Epoch 266, time 13.604110479354858, roc 0.8813398140321219
+
+hrg hgcn sch200-0.5 lr0.1 c=1
+Epoch 437, time 45.55221104621887, roc 0.9664593648110131
+Epoch 378, time 40.90842056274414, roc 0.9623837700760778
+Epoch 653, time 69.02146005630493, roc 0.9637498490520469
+Epoch 477, time 48.88408422470093, roc 0.9668065451032484
+Epoch 297, time 30.739248037338257, roc 0.9643687356599444
+
+hrg hgcn basic c=1
+Epoch 556, time 59.98799681663513, roc 0.9666782393430745
+Epoch 497, time 53.98999285697937, roc 0.9642177877067988
+Epoch 156, time 17.726454496383667, roc 0.9484512740007244
+Epoch 217, time 24.184202194213867, roc 0.9553269532665137
+Epoch 496, time 52.28404355049133, roc 0.9619913053978988
+
+hrg hgcn sch100-0.5
+Epoch 892, time 102.68311285972595, roc 0.9632592682043231
+Epoch 493, time 55.251795291900635, roc 0.9598629392585436
+Epoch 733, time 81.07392716407776, roc 0.9591836734693877
+Epoch 644, time 70.6512656211853, roc 0.9669725878517088
+Epoch 702, time 75.92018032073975, roc 0.9636592802801593
+
+hrg hgcn dropout 0.5
+446 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.911
+150 epochs, ROC AUC 0.904
+181 epochs, ROC AUC 0.915
+303 epochs, ROC AUC 0.935
+
+hrg hgcn dropout 0.1
+340 epochs, ROC AUC 0.953
+445 epochs, ROC AUC 0.953
+248 epochs, ROC AUC 0.948
+394 epochs, ROC AUC 0.956
+458 epochs, ROC AUC 0.957
+
+hrg hgcn dropout 1.0
+101 epochs, ROC AUC 0.88
+101 epochs, ROC AUC 0.911
+101 epochs, ROC AUC 0.891
+101 epochs, ROC AUC 0.913
+101 epochs, ROC AUC 0.908
+
+hrg hgcn dropout 0.3
+518 epochs, ROC AUC 0.943
+319 epochs, ROC AUC 0.939
+265 epochs, ROC AUC 0.938
+208 epochs, ROC AUC 0.94
+392 epochs, ROC AUC 0.
+
+hrg hgcn wdecay 0.001
+929 epochs, ROC AUC 0.978
+715 epochs, ROC AUC 0.973
+1215 epochs, ROC AUC 0.976
+423 epochs, ROC AUC 0.97
+386 epochs, ROC AUC 0.969
+
+hrg hgcn wdecay 0.01
+653 epochs, ROC AUC 0.97
+154 epochs, ROC AUC 0.952
+131 epochs, ROC AUC 0.947
+276 epochs, ROC AUC 0.963
+389 epochs, ROC AUC 0.966
+
+hrg hgcn wdecay 0.1
+162 epochs, ROC AUC 0.942
+127 epochs, ROC AUC 0.945
+193 epochs, ROC AUC 0.945
+146 epochs, ROC AUC 0.942
+154 epochs, ROC AUC 0.944
+
+hrg hgcn wdecay 0.1, sch200-0.5, lr0.1
+126 epochs, ROC AUC 0.94
+117 epochs, ROC AUC 0.942
+121 epochs, ROC AUC 0.942
+132 epochs, ROC AUC 0.941
+125 epochs, ROC AUC 0.941
+
+hrg hgcn wdecay 0.01, sch200-0.5, lr0.1
+303 epochs, ROC AUC 0.967
+196 epochs, ROC AUC 0.966
+239 epochs, ROC AUC 0.963
+234 epochs, ROC AUC 0.96
+222 epochs, ROC AUC 0.965
+
+hrg hgcn wdecay 0.001, sch200-0.5, lr0.1
+274 epochs, ROC AUC 0.971
+329 epochs, ROC AUC 0.971
+464 epochs, ROC AUC 0.972
+238 epochs, ROC AUC 0.971
+369 epochs, ROC AUC 0.972
+
+hrg hgcn wdecay 0.0005, sch200-0.5, lr0.1
+459 epochs, ROC AUC 0.973
+294 epochs, ROC AUC 0.969
+234 epochs, ROC AUC 0.968
+398 epochs, ROC AUC 0.974
+376 epochs, ROC AUC 0.969
+
+hrg hgcn wdecay 0.0001, sch200-0.5, lr0.1
+522 epochs, ROC AUC 0.974
+335 epochs, ROC AUC 0.968
+244 epochs, ROC AUC 0.966
+277 epochs, ROC AUC 0.971
+682 epochs, ROC AUC 0.974
+
+
+vvvvv using val roc instead of test roc vvvvvv
+----------------------------------------------
+hrg hgcn basic
+590 epochs, ROC AUC 0.964
+777 epochs, ROC AUC 0.966
+498 epochs, ROC AUC 0.961
+496 epochs, ROC AUC 0.966
+1420 epochs, ROC AUC 0.97
+Average 0.965
+
+hrg hgcn sch400-0.5
+1170 epochs, ROC AUC 0.965
+502 epochs, ROC AUC 0.961
+498 epochs, ROC AUC 0.961
+496 epochs, ROC AUC 0.966
+1097 epochs, ROC AUC 0.
+Average 0.964
+
+hrg hgcn sch200-0.5
+688 epochs, ROC AUC 0.962
+489 epochs, ROC AUC 0.958
+724 epochs, ROC AUC 0.96
+418 epochs, ROC AUC 0.964
+511 epochs, ROC AUC 0.967
+Average 0.961
+
+
+hrg hgcn sch200-0.5 lr0.1
+502 epochs, ROC AUC 0.97
+503 epochs, ROC AUC 0.966
+488 epochs, ROC AUC 0.969
+273 epochs, ROC AUC 0.97
+433 epochs, ROC AUC 0.968
+Average 0.969
+
+hrg hgcn lr0.1
+616 epochs, ROC AUC 0.97
+467 epochs, ROC AUC 0.968
+549 epochs, ROC AUC 0.971
+273 epochs, ROC AUC 0.97
+368 epochs, ROC AUC 0.968
+Average 0.969
+
+hrg hgcn sch100-0.5
+892 epochs, ROC AUC 0.957
+493 epochs, ROC AUC 0.954
+733 epochs, ROC AUC 0.952
+644 epochs, ROC AUC 0.961
+702 epochs, ROC AUC 0.957
+Average X
+
+hrg hgcn sch200-0.5 lr0.1 c=1
+437 epochs, ROC AUC 0.96
+378 epochs, ROC AUC 0.954
+653 epochs, ROC AUC 0.96
+477 epochs, ROC AUC 0.963
+297 epochs, ROC AUC 0.958
+
+hrg hgcn sch200-0.5 lr0.1 wdecay=0.001
+274 epochs, ROC AUC 0.963
+329 epochs, ROC AUC 0.966
+464 epochs, ROC AUC 0.968
+238 epochs, ROC AUC 0.966
+369 epochs, ROC AUC 0.965
+
+hrg hgcn sch200-0.5 lr0.1 wdecay=0.0001
+522 epochs, ROC AUC 0.968
+335 epochs, ROC AUC 0.966
+244 epochs, ROC AUC 0.963
+277 epochs, ROC AUC 0.966
+682 epochs, ROC AUC 0.968
+
+
+------ HRG GCN -----------
+basic
+725 epochs, ROC AUC 0.865
+317 epochs, ROC AUC 0.853
+494 epochs, ROC AUC 0.902
+459 epochs, ROC AUC 0.874
+373 epochs, ROC AUC 0.835
+Average 0.867
+
+lr0.1
+188 epochs, ROC AUC 0.869
+479 epochs, ROC AUC 0.873
+320 epochs, ROC AUC 0.896
+337 epochs, ROC AUC 0.883
+266 epochs, ROC AUC 0.896
+Average 0.883
+
+lr0.1 sch100-0.5
+284 epochs, ROC AUC 0.877
+337 epochs, ROC AUC 0.864
+309 epochs, ROC AUC 0.868
+169 epochs, ROC AUC 0.833
+544 epochs, ROC AUC 0.906
+Average 0.870
+
+lr0.1 sch100-0.1
+188 epochs, ROC AUC 0.869
+225 epochs, ROC AUC 0.851
+178 epochs, ROC AUC 0.859
+210 epochs, ROC AUC 0.836
+198 epochs, ROC AUC 0.872
+
+lr0.1 dropout 0.5
+126 epochs, ROC AUC 0.805
+112 epochs, ROC AUC 0.804
+113 epochs, ROC AUC 0.809
+120 epochs, ROC AUC 0.801
+490 epochs, ROC AUC 0.837
+
+lr 0.1 dropout 0.2
+336 epochs, ROC AUC 0.831
+462 epochs, ROC AUC 0.84
+761 epochs, ROC AUC 0.848
+115 epochs, ROC AUC 0.792
+512 epochs, ROC AUC 0.844
+
+lr 0.1 wdecay 0.001
+259 epochs, ROC AUC 0.829
+208 epochs, ROC AUC 0.826
+669 epochs, ROC AUC 0.875
+536 epochs, ROC AUC 0.863
+1093 epochs, ROC AUC 0.896
+
+lr 0.1 sch100-0.5 pat200
+384 epochs, ROC AUC 0.877
+437 epochs, ROC AUC 0.864
+592 epochs, ROC AUC 0.874
+628 epochs, ROC AUC 0.869
+644 epochs, ROC AUC 0.906
+
+
+--- HGCN CORA -----
+from paper
+315 epochs, ROC AUC 0.916
+206 epochs, ROC AUC 0.921
+241 epochs, ROC AUC 0.919
+269 epochs, ROC AUC 0.922
+205 epochs, ROC AUC 0.916
+
+basic
+223 epochs, ROC AUC 0.885
+150 epochs, ROC AUC 0.901
+148 epochs, ROC AUC 0.896
+153 epochs, ROC AUC 0.893
+228 epochs, ROC AUC 0.899
+
+
+---------------------------------------
+
+HRG GCN
+188 epochs, ROC AUC 0.842
+479 epochs, ROC AUC 0.854
+320 epochs, ROC AUC 0.887
+337 epochs, ROC AUC 0.874
+266 epochs, ROC AUC 0.881
+246 epochs, ROC AUC 0.841
+171 epochs, ROC AUC 0.847
+644 epochs, ROC AUC 0.88
+156 epochs, ROC AUC 0.853
+293 epochs, ROC AUC 0.876
+
+HRG HGCN
+502 epochs, ROC AUC 0.973
+503 epochs, ROC AUC 0.971
+488 epochs, ROC AUC 0.97
+273 epochs, ROC AUC 0.97
+433 epochs, ROC AUC 0.97
+493 epochs, ROC AUC 0.975
+373 epochs, ROC AUC 0.97
+260 epochs, ROC AUC 0.971
+362 epochs, ROC AUC 0.97
+436 epochs, ROC AUC 0.975
+
+SBM HGCN test
+119 epochs, ROC AUC 0.917
+119 epochs, ROC AUC 0.917
+
+SBM GCN
+211 epochs, ROC AUC 0.915
+142 epochs, ROC AUC 0.92
+148 epochs, ROC AUC 0.914
+144 epochs, ROC AUC 0.908
+131 epochs, ROC AUC 0.918
+143 epochs, ROC AUC 0.906
+132 epochs, ROC AUC 0.902
+129 epochs, ROC AUC 0.906
+126 epochs, ROC AUC 0.913
+143 epochs, ROC AUC 0.913
+
+SBM HGCN
+119 epochs, ROC AUC 0.917
+122 epochs, ROC AUC 0.92
+151 epochs, ROC AUC 0.919
+114 epochs, ROC AUC 0.919
+134 epochs, ROC AUC 0.918
+132 epochs, ROC AUC 0.918
+388 epochs, ROC AUC 0.916
+126 epochs, ROC AUC 0.915
+120 epochs, ROC AUC 0.918
+372 epochs, ROC AUC 0.918
+171 epochs, ROC AUC 0.904
+263 epochs, ROC AUC 0.896
+502 epochs, ROC AUC 0.973
+315 epochs, ROC AUC 0.935
+563 epochs, ROC AUC 0.915
+424 epochs, ROC AUC 0.691
+315 epochs, ROC AUC 0.935
+711 epochs, ROC AUC 0.935
+223 epochs, ROC AUC 0.91
+348 epochs, ROC AUC 0.913
+590 epochs, ROC AUC 0.971
+616 epochs, ROC AUC 0.973
+
+
+-------------------------------- 29 august
+
+Cora HGCN paper, lr 0.01
+223 epochs, ROC AUC 0.91
+150 epochs, ROC AUC 0.915
+148 epochs, ROC AUC 0.912
+153 epochs, ROC AUC 0.911
+228 epochs, ROC AUC 0.913
+
+Cora HGCN paper, lr 0.001
+348 epochs, ROC AUC 0.913
+403 epochs, ROC AUC 0.909
+323 epochs, ROC AUC 0.917
+351 epochs, ROC AUC 0.911
+379 epochs, ROC AUC 0.912
+
+Cora GCN basic
+104 epochs, ROC AUC 0.838
+124 epochs, ROC AUC 0.85
+103 epochs, ROC AUC 0.821
+102 epochs, ROC AUC 0.815
+158 epochs, ROC AUC 0.75
+107 epochs, ROC AUC 0.807
+105 epochs, ROC AUC 0.837
+103 epochs, ROC AUC 0.814
+101 epochs, ROC AUC 0.775
+104 epochs, ROC AUC 0.84
+
+104 epochs, ROC AUC 0.838
+204 epochs, ROC AUC 0.838
+269 epochs, ROC AUC 0.786
+171 epochs, ROC AUC 0.884
+371 epochs, ROC AUC 0.884
+
+Cora GCN dropout 0.2
+171 epochs, ROC AUC 0.867
+179 epochs, ROC AUC 0.843
+208 epochs, ROC AUC 0.834
+407 epochs, ROC AUC 0.876
+339 epochs, ROC AUC 0.864
+203 epochs, ROC AUC 0.846
+219 epochs, ROC AUC 0.839
+576 epochs, ROC AUC 0.877
+253 epochs, ROC AUC 0.864
+343 epochs, ROC AUC 0.884
+
+Cora GCN dropout 0.2 sch200-0.5
+171 epochs, ROC AUC 0.867
+179 epochs, ROC AUC 0.843
+208 epochs, ROC AUC 0.834
+660 epochs, ROC AUC 0.871
+379 epochs, ROC AUC 0.864
+
+Disease HGCN basic
+424 epochs, ROC AUC 0.751
+839 epochs, ROC AUC 0.767
+406 epochs, ROC AUC 0.757
+489 epochs, ROC AUC 0.775
+407 epochs, ROC AUC 0.784
+788 epochs, ROC AUC 0.782
+
+Disease HGCN lr0.1
+254 epochs, ROC AUC 0.834
+112 epochs, ROC AUC 0.799
+272 epochs, ROC AUC 0.826
+259 epochs, ROC AUC 0.814
+181 epochs, ROC AUC 0.802
+181 epochs, ROC AUC 0.815
+183 epochs, ROC AUC 0.816
+
+Disease HGCN lr0.001
+2258 epochs, ROC AUC 0.749
+
+Disease GCN lr0.001
+246 epochs, ROC AUC 0.675
+233 epochs, ROC AUC 0.669
+230 epochs, ROC AUC 0.648
+430 epochs, ROC AUC 0.615
+305 epochs, ROC AUC 0.667
+
+Disease GCN lr0.01
+130 epochs, ROC AUC 0.689
+122 epochs, ROC AUC 0.675
+119 epochs, ROC AUC 0.668
+147 epochs, ROC AUC 0.624
+132 epochs, ROC AUC 0.664
+
+Disease GCN lr0.1
+259 epochs, ROC AUC 0.691
+136 epochs, ROC AUC 0.694
+230 epochs, ROC AUC 0.732
+229 epochs, ROC AUC 0.725
+279 epochs, ROC AUC 0.762
+
+????
+134 epochs, ROC AUC 0.925
+101 epochs, ROC AUC 0.919
+
+LFR GCN basic
+101 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.92
+101 epochs, ROC AUC 0.914
+101 epochs, ROC AUC 0.913
+
+LFR HGCN lr0.01
+134 epochs, ROC AUC 0.925
+131 epochs, ROC AUC 0.923
+129 epochs, ROC AUC 0.922
+151 epochs, ROC AUC 0.921
+145 epochs, ROC AUC 0.933
+
+LFR HGCN lr0.1
+101 epochs, ROC AUC 0.919
+101 epochs, ROC AUC 0.924
+101 epochs, ROC AUC 0.92
+113 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.931
+
+LFR HGCN lr0.001
+107 epochs, ROC AUC 0.92
+435 epochs, ROC AUC 0.924
+233 epochs, ROC AUC 0.922
+355 epochs, ROC AUC 0.923
+107 epochs, ROC AUC 0.929
+1001 epochs, ROC AUC 0.924 (extended)
+
+LFR HGCN lr0.01 dropout 0.5
+140 epochs, ROC AUC 0.93
+148 epochs, ROC AUC 0.926
+255 epochs, ROC AUC 0.935
+148 epochs, ROC AUC 0.926
+101 epochs, ROC AUC 0.923
+
+LFR HGCN lr0.01 dropout 0.8
+120 epochs, ROC AUC 0.927
+188 epochs, ROC AUC 0.926
+300 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.92
+104 epochs, ROC AUC 0.925
+
+LFR HGCN lr0.01 dropout 0.3
+147 epochs, ROC AUC 0.929
+136 epochs, ROC AUC 0.923
+250 epochs, ROC AUC 0.928
+103 epochs, ROC AUC 0.92
+101 epochs, ROC AUC 0.923
+
+LFR HGCN lr0.01 dropout 0.5 wdecay 0.001
+125 epochs, ROC AUC 0.927
+261 epochs, ROC AUC 0.923
+148 epochs, ROC AUC 0.925
+105 epochs, ROC AUC 0.922
+227 epochs, ROC AUC 0.925
+
+LFR GCN lr0.01
+101 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.92
+101 epochs, ROC AUC 0.914
+101 epochs, ROC AUC 0.913
+
+LFR GCN lr0.1
+101 epochs, ROC AUC 0.926
+101 epochs, ROC AUC 0.925
+101 epochs, ROC AUC 0.92
+101 epochs, ROC AUC 0.911
+101 epochs, ROC AUC 0.912
+
+LFR GCN lr0.001
+103 epochs, ROC AUC 0.929
+104 epochs, ROC AUC 0.921
+101 epochs, ROC AUC 0.921
+101 epochs, ROC AUC 0.92
+103 epochs, ROC AUC 0.914
+
+LFR GCN lr0.001 pat200
+203 epochs, ROC AUC 0.929
+204 epochs, ROC AUC 0.921
+201 epochs, ROC AUC 0.921
+200 epochs, ROC AUC 0.92
+203 epochs, ROC AUC 0.914
+
+LFR GCN lr0.01 dr0.5
+101 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.928
+105 epochs, ROC AUC 0.918
+102 epochs, ROC AUC 0.927
+105 epochs, ROC AUC 0.922
+
+LFR GCN lr0.01 dr0.5 wdecay 0.001
+153 epochs, ROC AUC 0.931
+202 epochs, ROC AUC 0.927
+206 epochs, ROC AUC 0.926
+171 epochs, ROC AUC 0.93
+104 epochs, ROC AUC 0.929
+
+airport HGCN lr0.01
+1279 epochs, ROC AUC 0.947
+862 epochs, ROC AUC 0.947
+545 epochs, ROC AUC 0.944
+954 epochs, ROC AUC 0.946
+
+airport HGCN lr0.001
+563 epochs, ROC AUC 0.93
+2595 epochs, ROC AUC 0.946
+2615 epochs, ROC AUC 0.944
+1961 epochs, ROC AUC 0.942
+4013 epochs, ROC AUC 0.947
+
+airport HGCN lr0.1
+411 epochs, ROC AUC 0.948
+1293 epochs, ROC AUC 0.949
+367 epochs, ROC AUC 0.949
+576 epochs, ROC AUC 0.948
+712 epochs, ROC AUC 0.946
+
+airport HGCN lr0.1 d0.5
+467 epochs, ROC AUC 0.921
+224 epochs, ROC AUC 0.918
+184 epochs, ROC AUC 0.921
+
+airport HGCN lr0.1 d0.2
+107 epochs, ROC AUC 0.92
+685 epochs, ROC AUC 0.943
+
+airport HGCN lr0.1 wdecay0.001
+411 epochs, ROC AUC 0.959
+448 epochs, ROC AUC 0.956
+417 epochs, ROC AUC 0.957
+422 epochs, ROC AUC 0.956
+
+airport HGCN lr0.1 wdecay0.01
+222 epochs, ROC AUC 0.942
+220 epochs, ROC AUC 0.958
+294 epochs, ROC AUC 0.942
+
+airport HGCN lr0.1 wdecay0.0001
+351 epochs, ROC AUC 0.951
+575 epochs, ROC AUC 0.959
+362 epochs, ROC AUC 0.956
+406 epochs, ROC AUC 0.956
+737 epochs, ROC AUC 0.957
+
+airport GCN lr0.01
+172 epochs, ROC AUC 0.9
+101 epochs, ROC AUC 0.906
+107 epochs, ROC AUC 0.919
+108 epochs, ROC AUC 0.898
+106 epochs, ROC AUC 0.909
+
+airport GCN lr0.001
+138 epochs, ROC AUC 0.896
+101 epochs, ROC AUC 0.909
+160 epochs, ROC AUC 0.921
+163 epochs, ROC AUC 0.898
+138 epochs, ROC AUC 0.908
+
+airport GCN lr0.1
+201 epochs, ROC AUC 0.925
+101 epochs, ROC AUC 0.907
+101 epochs, ROC AUC 0.914
+104 epochs, ROC AUC 0.911
+277 epochs, ROC AUC 0.919
+
+airport GCN lr0.1 do0.5
+262 epochs, ROC AUC 0.916
+230 epochs, ROC AUC 0.914
+101 epochs, ROC AUC 0.914
+101 epochs, ROC AUC 0.908
+101 epochs, ROC AUC 0.906
+
+airport GCN lr0.1 do0.2
+706 epochs, ROC AUC 0.924
+210 epochs, ROC AUC 0.92
+101 epochs, ROC AUC 0.909
+101 epochs, ROC AUC 0.905
+101 epochs, ROC AUC 0.907
+
+airport GCN lr0.1 do0.8
+163 epochs, ROC AUC 0.911
+102 epochs, ROC AUC 0.908
+101 epochs, ROC AUC 0.91
+103 epochs, ROC AUC 0.908
+101 epochs, ROC AUC 0.904
+
+airport GCN lr0.1 wdecay0.001
+363 epochs, ROC AUC 0.923
+632 epochs, ROC AUC 0.928
+329 epochs, ROC AUC 0.934
+403 epochs, ROC AUC 0.927
+271 epochs, ROC AUC 0.931
+
+airport GCN lr0.1 wdecay0.0001
+101 epochs, ROC AUC 0.889
+101 epochs, ROC AUC 0.905
+232 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.904
+102 epochs, ROC AUC 0.902
+
+airport GCN lr0.1 wdecay 0.01
+129 epochs, ROC AUC 0.898
+101 epochs, ROC AUC 0.9
+101 epochs, ROC AUC 0.916
+
+-------------------------------------------
+
+road HGCN lr0.01
+118 epochs, ROC AUC 0.978
+122 epochs, ROC AUC 0.977
+115 epochs, ROC AUC 0.978
+128 epochs, ROC AUC 0.978
+134 epochs, ROC AUC 0.977
+
+road HGCN lr0.001
+241 epochs, ROC AUC 0.977
+146 epochs, ROC AUC 0.98
+253 epochs, ROC AUC 0.978
+215 epochs, ROC AUC 0.978
+216 epochs, ROC AUC 0.978
+
+road HGCN lr0.1
+102 epochs, ROC AUC 0.977
+4 errors
+
+road HGCN lr0.01 do0.2
+124 epochs, ROC AUC 0.978
+112 epochs, ROC AUC 0.979
+139 epochs, ROC AUC 0.977
+140 epochs, ROC AUC 0.978
+124 epochs, ROC AUC 0.978
+
+road HGCN lr0.01 do0.5
+139 epochs, ROC AUC 0.977
+133 epochs, ROC AUC 0.978
+188 epochs, ROC AUC 0.977
+150 epochs, ROC AUC 0.977
+158 epochs, ROC AUC 0.978
+
+road HGCN lr0.01 wdecay0.0001
+102 epochs, ROC AUC 0.92
+141 epochs, ROC AUC 0.977
+121 epochs, ROC AUC 0.977
+101 epochs, ROC AUC 0.892
+137 epochs, ROC AUC 0.978
+
+road GCN lr0.01
+242 epochs, ROC AUC 0.972
+274 epochs, ROC AUC 0.976
+505 epochs, ROC AUC 0.976
+287 epochs, ROC AUC 0.976
+320 epochs, ROC AUC 0.952
+
+road GCN lr0.001
+950 epochs, ROC AUC 0.977
+890 epochs, ROC AUC 0.976
+887 epochs, ROC AUC 0.972
+
+road GCN lr0.1
+142 epochs, ROC AUC 0.965
+129 epochs, ROC AUC 0.972
+113 epochs, ROC AUC 0.961
+141 epochs, ROC AUC 0.975
+183 epochs, ROC AUC 0.972
+
+road GCN lr0.01 do0.2
+201 epochs, ROC AUC 0.819
+170 epochs, ROC AUC 0.823
+190 epochs, ROC AUC 0.853
+182 epochs, ROC AUC 0.796
+254 epochs, ROC AUC 0.804
+
+road GCN lr0.01 wdecay 0.0001
+101 epochs, ROC AUC 0.534
+101 epochs, ROC AUC 0.519
+101 epochs, ROC AUC 0.524
+101 epochs, ROC AUC 0.503
+101 epochs, ROC AUC 0.501
+
+
+
+---- performance ----------------------
+
+cora gcn
+171 epochs, ROC AUC 0.884
+179 epochs, ROC AUC 0.845
+208 epochs, ROC AUC 0.849
+407 epochs, ROC AUC 0.903
+339 epochs, ROC AUC 0.887
+
+cora hgcn
+711 epochs, ROC AUC 0.935
+590 epochs, ROC AUC 0.926
+524 epochs, ROC AUC 0.934
+659 epochs, ROC AUC 0.933
+779 epochs, ROC AUC 0.928
+
+airport gcn
+363 epochs, ROC AUC 0.912
+632 epochs, ROC AUC 0.915
+329 epochs, ROC AUC 0.918
+403 epochs, ROC AUC 0.913
+271 epochs, ROC AUC 0.916
+
+airport hgcn
+411 epochs, ROC AUC 0.951
+448 epochs, ROC AUC 0.945
+417 epochs, ROC AUC 0.944
+422 epochs, ROC AUC 0.952
+
+disease gcn
+312 epochs, ROC AUC 0.536
+204 epochs, ROC AUC 0.575
+162 epochs, ROC AUC 0.6
+217 epochs, ROC AUC 0.567
+391 epochs, ROC AUC 0.568
+
+disease hgcn
+156 epochs, ROC AUC 0.642
+183 epochs, ROC AUC 0.638
+243 epochs, ROC AUC 0.637
+137 epochs, ROC AUC 0.624
+161 epochs, ROC AUC 0.654
+
+road gcn
+242 epochs, ROC AUC 0.96
+274 epochs, ROC AUC 0.97
+505 epochs, ROC AUC 0.972
+287 epochs, ROC AUC 0.971
+320 epochs, ROC AUC 0.947
+
+road hgcn
+118 epochs, ROC AUC 0.973
+122 epochs, ROC AUC 0.973
+115 epochs, ROC AUC 0.972
+128 epochs, ROC AUC 0.973
+134 epochs, ROC AUC 0.974
+
+hrg gcn
+188 epochs, ROC AUC 0.842
+479 epochs, ROC AUC 0.854
+320 epochs, ROC AUC 0.887
+337 epochs, ROC AUC 0.874
+266 epochs, ROC AUC 0.881
+
+hrg hgcn
+616 epochs, ROC AUC 0.973
+467 epochs, ROC AUC 0.972
+549 epochs, ROC AUC 0.971
+273 epochs, ROC AUC 0.97
+368 epochs, ROC AUC 0.969
+
+lfr gcn
+153 epochs, ROC AUC 0.911
+202 epochs, ROC AUC 0.907
+206 epochs, ROC AUC 0.907
+171 epochs, ROC AUC 0.909
+104 epochs, ROC AUC 0.909
+
+lfr hgcn
+140 epochs, ROC AUC 0.914
+148 epochs, ROC AUC 0.907
+255 epochs, ROC AUC 0.914
+148 epochs, ROC AUC 0.916
+101 epochs, ROC AUC 0.911
+
+sbm gcn
+119 epochs, ROC AUC 0.928
+216 epochs, ROC AUC 0.928
+101 epochs, ROC AUC 0.918
+101 epochs, ROC AUC 0.912
+101 epochs, ROC AUC 0.918
+
+sbm hgcn
+101 epochs, ROC AUC 0.925
+
+----------------------------------- val
+
+sbm hgcn lr0.1
+134 epochs, ROC AUC 0.928
+125 epochs, ROC AUC 0.93
+133 epochs, ROC AUC 0.93
+126 epochs, ROC AUC 0.928
+
+sbm hgcn lr0.01
+101 epochs, ROC AUC 0.925
+
+sbm hgcn lr0.1 do0.2 and 0.5 -> errors
+
+sbm hgcn lr0.1 wdecay0.0001
+169 epochs, ROC AUC 0.929
+241 epochs, ROC AUC 0.931
+213 epochs, ROC AUC 0.929
+278 epochs, ROC AUC 0.931
+103 epochs, ROC AUC 0.923
+
+sbm hgcn lr0.1 wdecay0.001
+458 epochs, ROC AUC 0.931
+
+sbm gcn lr0.01
+119 epochs, ROC AUC 0.928
+216 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.908
+101 epochs, ROC AUC 0.917
+
+sbm gcn lr0.1
+105 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.923
+101 epochs, ROC AUC 0.921
+176 epochs, ROC AUC 0.923
+106 epochs, ROC AUC 0.918
+
+sbm gcn lr0.1 dropout0.5 -> better
+101 epochs, ROC AUC 0.926
+110 epochs, ROC AUC 0.925
+101 epochs, ROC AUC 0.923
+115 epochs, ROC AUC 0.923
+153 epochs, ROC AUC 0.925
+
+sbm gcn lr0.1 dropout0.2 -> best
+135 epochs, ROC AUC 0.928
+110 epochs, ROC AUC 0.923
+217 epochs, ROC AUC 0.928
+163 epochs, ROC AUC 0.929
+113 epochs, ROC AUC 0.924
+
+sbm gcn lr0.1 dropout0.2 wdecay 0.0001
+185 epochs, ROC AUC 0.929
+164 epochs, ROC AUC 0.929
+147 epochs, ROC AUC 0.926
+161 epochs, ROC AUC 0.925
+106 epochs, ROC AUC 0.926
+
+sbm gcn lr0.1 dropout0.2 wdecay 0.001
+212 epochs, ROC AUC 0.927
+139 epochs, ROC AUC 0.926
+101 epochs, ROC AUC 0.929
+335 epochs, ROC AUC 0.93
+262 epochs, ROC AUC 0.928
+
+---- performance again ----------------
+
+sbm gcn
+185 epochs, ROC AUC 0.924
+164 epochs, ROC AUC 0.927
+147 epochs, ROC AUC 0.925
+161 epochs, ROC AUC 0.921
+106 epochs, ROC AUC 0.925
+
+sbm hgcn
+169 epochs, ROC AUC 0.926
+241 epochs, ROC AUC 0.929
+213 epochs, ROC AUC 0.927
+278 epochs, ROC AUC 0.929
+103 epochs, ROC AUC 0.921
+
+
+- increasing parameters, hrg -----------------
+hidden_dim-num_layers-output_dim
+
+gcn 16-2-16
+188 epochs, ROC AUC 0.842
+479 epochs, ROC AUC 0.854
+320 epochs, ROC AUC 0.887
+337 epochs, ROC AUC 0.874
+266 epochs, ROC AUC 0.881
+
+hgcn 16-2-16
+616 epochs, ROC AUC 0.973
+467 epochs, ROC AUC 0.972
+549 epochs, ROC AUC 0.971
+273 epochs, ROC AUC 0.97
+368 epochs, ROC AUC 0.969
+
+gcn 16-2-256
+314 epochs, ROC AUC 0.917
+293 epochs, ROC AUC 0.909
+287 epochs, ROC AUC 0.902
+241 epochs, ROC AUC 0.905
+236 epochs, ROC AUC 0.895
+
+gcn-16-2-1024
+268 epochs, ROC AUC 0.915
+353 epochs, ROC AUC 0.905
+421 epochs, ROC AUC 0.901
+252 epochs, ROC AUC 0.915
+410 epochs, ROC AUC 0.927
+
+gcn-16-2-2
+105 epochs, ROC AUC 0.799
+101 epochs, ROC AUC 0.726
+101 epochs, ROC AUC 0.725
+101 epochs, ROC AUC 0.738
+102 epochs, ROC AUC 0.715
+188 epochs, ROC AUC 0.842
+479 epochs, ROC AUC 0.854
+320 epochs, ROC AUC 0.887
+337 epochs, ROC AUC 0.874
+266 epochs, ROC AUC 0.881
+616 epochs, ROC AUC 0.973
+467 epochs, ROC AUC 0.972
+549 epochs, ROC AUC 0.971
+273 epochs, ROC AUC 0.97
+368 epochs, ROC AUC 0.969
+105 epochs, ROC AUC 0.799
+101 epochs, ROC AUC 0.726
+101 epochs, ROC AUC 0.725
+101 epochs, ROC AUC 0.738
+102 epochs, ROC AUC 0.715
+188 epochs, ROC AUC 0.842
+479 epochs, ROC AUC 0.854
+320 epochs, ROC AUC 0.887
+337 epochs, ROC AUC 0.874
+266 epochs, ROC AUC 0.881
+307 epochs, ROC AUC 0.899
+397 epochs, ROC AUC 0.9
+306 epochs, ROC AUC 0.877
+273 epochs, ROC AUC 0.9
+223 epochs, ROC AUC 0.874
+268 epochs, ROC AUC 0.915
+353 epochs, ROC AUC 0.905
+421 epochs, ROC AUC 0.901
+252 epochs, ROC AUC 0.915
+410 epochs, ROC AUC 0.927
+130 epochs, ROC AUC 0.941
+101 epochs, ROC AUC 0.898
+141 epochs, ROC AUC 0.929
+389 epochs, ROC AUC 0.939
+270 epochs, ROC AUC 0.952
+616 epochs, ROC AUC 0.973
+467 epochs, ROC AUC 0.972
+549 epochs, ROC AUC 0.971
+273 epochs, ROC AUC 0.97
+368 epochs, ROC AUC 0.969
+920 epochs, ROC AUC 0.976
+840 epochs, ROC AUC 0.973
+418 epochs, ROC AUC 0.968
+612 epochs, ROC AUC 0.975
+482 epochs, ROC AUC 0.972
+372 epochs, ROC AUC 0.972
+803 epochs, ROC AUC 0.973
+693 epochs, ROC AUC 0.973
+1148 epochs, ROC AUC 0.981
+974 epochs, ROC AUC 0.972
+101 epochs, ROC AUC 0.919
+105 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.921
+103 epochs, ROC AUC 0.923
+102 epochs, ROC AUC 0.92
+185 epochs, ROC AUC 0.924
+164 epochs, ROC AUC 0.927
+147 epochs, ROC AUC 0.925
+130 epochs, ROC AUC 0.941
+130 epochs, ROC AUC 0.941
+105 epochs, ROC AUC 0.799
+130 epochs, ROC AUC 0.941
+104 epochs, ROC AUC 0.851
+104 epochs, ROC AUC 0.851
+102 epochs, ROC AUC 0.874
+19 epochs, ROC AUC 0.941
+19 epochs, ROC AUC 0.851
+0 epochs, ROC AUC 0.85
+1001 epochs, ROC AUC 0.851
+101 epochs, ROC AUC 0.919
+105 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.921
+103 epochs, ROC AUC 0.923
+102 epochs, ROC AUC 0.92
+185 epochs, ROC AUC 0.924
+164 epochs, ROC AUC 0.927
+147 epochs, ROC AUC 0.925
+161 epochs, ROC AUC 0.921
+106 epochs, ROC AUC 0.925
+136 epochs, ROC AUC 0.929
+108 epochs, ROC AUC 0.929
+209 epochs, ROC AUC 0.926
+106 epochs, ROC AUC 0.928
+148 epochs, ROC AUC 0.928
+195 epochs, ROC AUC 0.922
+124 epochs, ROC AUC 0.923
+296 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.928
+120 epochs, ROC AUC 0.927
+239 epochs, ROC AUC 0.925
+254 epochs, ROC AUC 0.93
+169 epochs, ROC AUC 0.926
+241 epochs, ROC AUC 0.929
+213 epochs, ROC AUC 0.927
+278 epochs, ROC AUC 0.929
+103 epochs, ROC AUC 0.921
+303 epochs, ROC AUC 0.929
+131 epochs, ROC AUC 0.927
+142 epochs, ROC AUC 0.926
+101 epochs, ROC AUC 0.923
+292 epochs, ROC AUC 0.928
+114 epochs, ROC AUC 0.928
+101 epochs, ROC AUC 0.919
+105 epochs, ROC AUC 0.922
+101 epochs, ROC AUC 0.921
+103 epochs, ROC AUC 0.923
+102 epochs, ROC AUC 0.92
+185 epochs, ROC AUC 0.924
+164 epochs, ROC AUC 0.927
+147 epochs, ROC AUC 0.925
+161 epochs, ROC AUC 0.921
+106 epochs, ROC AUC 0.925
+136 epochs, ROC AUC 0.929
+108 epochs, ROC AUC 0.929
+209 epochs, ROC AUC 0.926
+106 epochs, ROC AUC 0.928
+148 epochs, ROC AUC 0.928
+195 epochs, ROC AUC 0.922
+124 epochs, ROC AUC 0.923
+296 epochs, ROC AUC 0.927
+101 epochs, ROC AUC 0.928
+120 epochs, ROC AUC 0.927
+239 epochs, ROC AUC 0.925
+254 epochs, ROC AUC 0.93
+169 epochs, ROC AUC 0.926
+241 epochs, ROC AUC 0.929
+213 epochs, ROC AUC 0.927
+278 epochs, ROC AUC 0.929
+103 epochs, ROC AUC 0.921
+303 epochs, ROC AUC 0.929
+131 epochs, ROC AUC 0.927
+142 epochs, ROC AUC 0.926
+101 epochs, ROC AUC 0.923
+
+# sbm hgcn dim
+114 epochs, ROC AUC 0.928
+422 epochs, ROC AUC 0.928
+616 epochs, ROC AUC 0.973
+417 epochs, ROC AUC 0.973
+683 epochs, ROC AUC 0.972
+616 epochs, ROC AUC 0.973
+283 epochs, ROC AUC 0.986
+475 epochs, ROC AUC 0.949
+101 epochs, ROC AUC 0.935

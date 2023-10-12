@@ -10,6 +10,9 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 import snap
+import matplotlib.pyplot as plt
+
+from data.lfr_benchmark.lfr_benchmark import LFR_benchmark_graph as LFR
 
 
 def load_data(args, datapath):
@@ -45,7 +48,7 @@ def add_random_noise(data, std, dataset_name):
     """
     if std == 0.0:
         return data
-    if dataset_name == "hrg":
+    if dataset_name[:3] == "hrg":
         # scale std depending on max radius
         max_radius = np.sqrt(np.max(data[:, 0] ** 2 + data[:, 1] ** 2))
         if std < 0:
@@ -164,7 +167,7 @@ def load_data_lp(dataset, use_feats, data_path):
     elif dataset[:3] == 'hrg':
         adj, features = load_hrg_data(dataset, use_feats)[:2]
     elif dataset == 'lfr':
-        raise Exception("LFR with LP not implemented")
+        adj, features = load_lfr_data()[:2]
     elif dataset == 'sbm':
         adj, features = load_sbm_data(deterministic=False)[:2]
     elif dataset == 'roadnet_ca':
@@ -192,7 +195,7 @@ def load_data_nc(dataset, use_feats, data_path, split_seed):
         elif dataset == 'airport':
             adj, features, labels = load_data_airport(dataset, data_path, return_label=True)
             val_prop, test_prop = 0.15, 0.15
-        elif dataset == 'hrg':
+        elif dataset[:3] == 'hrg':
             raise Exception("HRG with NC not implemented.")
         elif dataset == 'lfr':
             raise Exception("LFR with NC not implemented.")
@@ -301,7 +304,7 @@ def load_hrg_data(name, use_feats=True):
     """
     Generate and load HRG data.
 
-    Parameters are inputted in the dataset name: for example hrg_n1000_t02 will generate
+    Parameters are inputted in the dataset name: for example hrg_n1000_t0.2 will generate
     a HRG with 1000 nodes and temperature 0.2.
 
     If parameters are not specified, defaults are n = 100 and t = 0.0.
@@ -310,36 +313,40 @@ def load_hrg_data(name, use_feats=True):
     """
 
     # read parameters
-    n = 100
+    n = 1000
     t = 0.0
+    alpha = 0.75
+    deg = 10
     params = name.split("_")
-    if len(params) == 1:
-        n = 100
-        t = 0
-    else:
+    if len(params) > 1:
         for param in params[1:]:
             if param[0] == "n":
                 n = int(param[1:])
             elif param[0] == "t":
-                t_raw = param[1:]
-                if t_raw[0] != '0' or len(t_raw) < 2:
-                    raise Exception("Temperature for HRG must be given in format 0xxx... for 0.xxx; or 00 for temperature 0")
-                t_raw = "0." + t_raw[1:]
-                t = float(t_raw)
+                t = float(param[1:])
+            elif param[0] == "a":
+                alpha = float(param[1:])
+            elif param[0] == "d":
+                deg = float(param[1:])
             else:
                 raise Exception(f"Invalid parameter for HRG: {param[0]}")
     
+    if t == 1:
+        t = 0
+        random_edges = True
+    else:
+        random_edges = False
+
     # generate data
-    alpha=0.75
-    deg=10
     file="data\hrg\hrg"
     edge=1
     coord=1
     rseed=12
     aseed=130
     sseed=1400
-    print(f"Generating HRG with n = {n} and t = {t}")
-    subprocess.call("C:\Program Files\girgs\genhrg" + f" -n {n} -alpha {alpha} -t {t} -deg {deg} -file {file} -edge {edge} -coord {coord} -rseed {rseed} -aseed {aseed} -sseed {sseed}")
+    # print(f"Generating HRG with n = {n} and t = {t}")
+    subprocess.call("C:\Program Files\girgs\genhrg" + f" -n {n} -alpha {alpha} -t {t} -deg {deg} -file {file} -edge {edge} -coord {coord} -rseed {rseed} -aseed {aseed} -sseed {sseed}",
+                    stdout=subprocess.DEVNULL)
 
     # load data
     with open("data\\hrg\\hrg.txt") as f:
@@ -351,6 +358,8 @@ def load_hrg_data(name, use_feats=True):
     if not use_feats:
         features = sp.eye(adj.shape[0])
     
+    if random_edges:
+        adj = nx.adjacency_matrix(nx.gnp_random_graph(n, 0.05))
 
     # generate labels
     num_bins = 6
@@ -424,9 +433,24 @@ def hrg_adjacency_matrix_from_str(graph_str: str):
     return nx.adjacency_matrix(nx.from_dict_of_lists(sorted_dict))
 
 
-def load_lfr_data():
-    # TODO add LFR
-    pass
+def load_lfr_data(n=1000):
+    """
+    Generate an LFR benchmark graph as a dataset with set parameters and seed.
+
+    Parameters
+    ----------
+    n : int, optional
+        Total number of nodes, by default 2000
+    """
+    graph = LFR(n=n, tau1=2, tau2=1.1, mu=0.1, min_degree=20, max_degree=50, seed=10)
+
+    adj = nx.adjacency_matrix(graph)
+
+    features = sp.eye(adj.shape[0])
+
+    return adj, features
+
+
 
 def load_sbm_data(blocks=None, transitions=None, deterministic=False):
     """
@@ -435,7 +459,7 @@ def load_sbm_data(blocks=None, transitions=None, deterministic=False):
 
     # define defaults
     if blocks is None:
-        blocks = [100, 120, 140, 160]
+        blocks = [200, 240, 280, 320]
     if transitions is None:
         transitions = [[0.9, 0.02, 0.03, 0.04],
                         [0.02, 0.8, 0.05, 0.06],
@@ -453,9 +477,6 @@ def load_sbm_data(blocks=None, transitions=None, deterministic=False):
     
     graph = nx.stochastic_block_model(blocks, transitions, seed=1)
 
-    # nx.draw(graph, node_size=20)
-    # import matplotlib.pyplot as plt
-    # plt.show()
 
     adj = nx.adjacency_matrix(graph)
 
@@ -463,19 +484,30 @@ def load_sbm_data(blocks=None, transitions=None, deterministic=False):
 
     partition = graph.graph["partition"]
     labels = np.zeros((len(graph), len(blocks)))
+    color_map = ["r", "c", "b", "m"]
+    node_colors = []
 
     for i, part in enumerate(partition):
         for node in part:
             labels[node, i] = 1
+            node_colors.append(color_map[i])
 
-    features = labels
+
+    # draw
+    # import matplotlib.pyplot as plt
+    # nx.draw(graph, node_size=40, node_color=node_colors)
+    # plt.savefig("results\\datasets\\sbm_colored.png")
+    # raise Exception
+
+
+    # use partitions as labels and features
+    # features = labels
 
     # np.savetxt("data\\sbm\\sbm.txt", nx.to_numpy_array(graph))
 
     return adj, features, labels
 
 def load_roadnet_ca():
-    # TODO remove method
     
     with open("data\\roadnet_ca\\roadNet-CA.txt", 'r') as f:
         content = f.read()
@@ -530,13 +562,28 @@ def load_enschede_road():
 
     # TODO remove this part and node_positions and counter
     # nx.draw_networkx(graph, pos=node_positions, with_labels=False, node_size=1)
-    # import matplotlib.pyplot as plt
+    
+
+    # nx.draw_networkx_nodes(graph, pos=node_positions, alpha=1, node_size=1, node_color='r')
+    # nx.draw_networkx_edges(graph, pos=node_positions, alpha=1)
+    
+    # plt.axis('off')
+    # plt.savefig("results\\datasets\\enschede_road.png", bbox_inches='tight', dpi=300)
+
+    # print(adj.shape)
+
     # plt.show()
 
     return adj, features
 
 if __name__=="__main__":
-    adj, features, labels = load_synthetic_data("disease_lp", True, "data\\disease_lp")
-    print(adj.shape)
-    adj, features, labels = load_synthetic_data("disease_nc", True, "data\\disease_nc")
-    print(adj.shape)
+    # adj, features, labels = load_synthetic_data("disease_lp", True, "data\\disease_lp")
+    # print(adj.shape)
+    # print(features.shape)
+    # adj, features, labels = load_synthetic_data("disease_nc", True, "data\\disease_nc")
+    # print(adj.shape)
+    # print(features.shape)
+
+    # load_roadnet_ca()
+    load_sbm_data()
+    pass

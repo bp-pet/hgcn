@@ -15,17 +15,20 @@ def hyperbolicity_sample(G, num_samples=50000):
 
     history = []
     current_max = 0
+    summ = 0
     for i in tqdm(range(num_samples)):
         node_tuple = np.random.choice(G.nodes(), 4, replace=False)
         try:
             hyp = calculate_hyp(G, node_tuple[0], node_tuple[1], node_tuple[2], node_tuple[3])
+            summ += hyp
             if hyp > current_max:
                 history.append((i, hyp))
                 current_max = hyp
         except Exception as e:
             continue
     print('Time for hyp: ', time.time() - curr_time)
-    return current_max, history
+    avg = summ / num_samples
+    return current_max, history, avg
 
 def calculate_hyp(G, a, b, c, d):
         s = []
@@ -51,3 +54,6 @@ def hyperbolicity_full(G):
             continue
     print('Time for hyp: ', time.time() - curr_time)
     return max(hyps)
+
+if __name__ == "__main__":
+    pass

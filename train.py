@@ -27,15 +27,22 @@ def train(args):
         args.manifold = "PoincareBall"
     #########################################
 
+    # preprocess c input ####################
+    # if type(args.c) is list:
+    #     if len(args.c) != args.num_layers + 1:
+    #         raise Exception("Invalid number of curvatures given, must be num_layers + 1")
+    # else:
+    #     args.c = [args.c] * (args.num_layers + 1)
 
-    # initialize curvature log ##############
-    if args.record_c_and_loss:
-        d = {}
-        for i in range(args.num_layers):
-            d[i] = []
-        curvature_log = pd.DataFrame.from_dict(d)
-        if args.task == "nc": # if task is nc then last layer is linear non-hyp.
-            curvature_log = curvature_log.drop(columns=[args.num_layers - 1])
+
+
+    # initialize loss and curvature log ##############
+    d = {}
+    for i in range(args.num_layers):
+        d[i] = []
+    curvature_log = pd.DataFrame.from_dict(d)
+    if args.task == "nc": # if task is nc then last layer is linear non-hyp.
+        curvature_log = curvature_log.drop(columns=[args.num_layers - 1])
     #########################################
 
     np.random.seed(args.seed)
@@ -46,7 +53,10 @@ def train(args):
         torch.cuda.manual_seed(args.seed)
     args.device = 'cuda:' + str(args.cuda) if int(args.cuda) >= 0 else 'cpu'
     args.patience = args.epochs if not args.patience else  int(args.patience)
-    logging.getLogger().setLevel(logging.INFO)
+    if args.log_info:
+        logging.getLogger().setLevel(logging.INFO)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
     if args.save:
         if not args.save_dir:
             dt = datetime.datetime.now()
@@ -128,6 +138,8 @@ def train(args):
                                    format_metrics(train_metrics, 'train'),
                                    'time: {:.4f}s'.format(time.time() - t)
                                    ]))
+        
+        # logging.info(str(model))
         if (epoch + 1) % args.eval_freq == 0:
             model.eval()
             embeddings = model.encode(data['features'], data['adj_train_norm'])
@@ -148,26 +160,31 @@ def train(args):
                     break
     
         # record curvature and loss ############
-        if args.record_c_and_loss:
-            d = {}
-            for i in model.children():
-                for j in i.children():
-                    for i, layer in enumerate(j.children()):
-                        if isinstance(layer, torch.nn.Linear):
-                            continue
-                        try:
-                            d[i] = [layer.get_curvature()]
-                        except AttributeError:
-                            d[i] = [0.0]
-            d["loss"] = [val_metrics["loss"].item()]
-            curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
+        d = {}
+        for i in model.children():
+            for j in i.children():
+                for i, layer in enumerate(j.children()):
+                    if isinstance(layer, torch.nn.Linear):
+                        continue
+                    try:
+                        d[i] = [layer.get_in_curvature()]
+                    except AttributeError:
+                        d[i] = [0.0]
+        
+        try:
+            d[args.num_layers] = layer.get_out_curvature()
+        except AttributeError:
+            d[args.num_layers] = [0.0]
+        d["loss"] = [val_metrics["loss"].item()]
+        curvature_log = pd.concat([curvature_log, pd.DataFrame.from_dict(d)])
         #########################################
     
 
-    # save plot of loss and save curvature ###########
-    if args.record_c_and_loss:
-        curvature_log.to_csv("curvature\\curvature.csv", index=False, header=True)
-        json.dump(vars(args), open("curvature\\configs.json", 'w'))
+    # save loss and curvature ###########
+    curvature_log.to_csv("curvature\\curvature.csv", index=False, header=True)
+    configs_json = vars(args)
+    configs_json["result"] = best_val_metrics["roc"]
+    json.dump(vars(args), open("curvature\\configs.json", 'w'))
     ##################################################
 
 
@@ -183,9 +200,8 @@ def train(args):
     if args.save:
 
         # save heatmap of embeddings ####################
-        if args.make_embedding_heatmap:
-            plt.imshow(best_emb.detach().numpy(), cmap='hot', interpolation='nearest')
-            plt.savefig("curvature\\embedding_heatmap.png")
+        # plt.imshow(best_emb.detach().numpy(), cmap='hot', interpolation='nearest')
+        # plt.savefig("curvature\\embedding_heatmap.png")
         #################################################
 
         np.save(os.path.join(save_dir, 'embeddings.npy'), best_emb.cpu().detach().numpy())
@@ -197,17 +213,20 @@ def train(args):
         json.dump(vars(args), open(os.path.join(save_dir, 'config.json'), 'w'))
         torch.save(model.state_dict(), os.path.join(save_dir, 'model.pth'))
         logging.info(f"Saved model in {save_dir}")
+        with open("curvature\\last_experiment_id.txt", 'w') as f:
+            f.write(save_dir)
     
     # record time, epochs, accuracy #######################
-    if args.record_performance:
-        if "roc" in best_test_metrics:
-            roc = best_test_metrics["roc"]
-            with open("curvature\\times.txt", 'a') as f:
-                f.write(f"\nEpoch {epoch}, time {elapsed_time}, roc {roc}")
-        else:
-            f1 = best_test_metrics["f1"]
-            with open("curvature\\times.txt", 'a') as f:
-                f.write(f"\nEpoch {epoch}, time {elapsed_time}, f1 {f1}")
+    if "roc" in best_test_metrics:
+        roc = best_test_metrics["roc"]
+        # roc = best_val_metrics["roc"]
+        with open("curvature\\times.txt", 'a') as f:
+            # f.write(f"\nEpoch {epoch}, time {elapsed_time}, roc {roc}")
+            f.write(f"\n{epoch} epochs, ROC AUC {round(roc, 3)}")
+    else:
+        f1 = best_test_metrics["f1"]
+        with open("curvature\\times.txt", 'a') as f:
+            f.write(f"\nEpoch {epoch}, time {elapsed_time}, f1 {f1}")
     #######################################################
 
     return best_test_metrics
@@ -216,24 +235,27 @@ def train(args):
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    args.dataset = "hrg_n1000"
+    args.dataset = "enschede_road"
     args.model = "HGCN"
-    args.task = "lp"
 
-    args.dim = 16
-    args.hidden_dim = args.dim
-    args.num_layers = 2
+    args.dim = 2
+    args.hidden_dim = 16
+    args.num_layers = 4
 
-    args.record_c_and_loss = True
-    args.make_embedding_heatmap = False
-    args.record_performance = True
+    args.lr = 0.1
+    # args.lr_reduce_freq = 200
+    # args.gamma = 0.5
 
-    # args.lr = 0.0001
-    # args.lr_reduce_freq = 100
+    # args.use_att = True
+    args.local_agg = True
 
     # for cora lp
     # args.dropout = 0.5
-    # args.weight_decay = 0.001
+    # args.weight_decay = 0.0001
+
+    # for pubmed lp
+    # args.dropout = 0.4
+    # args.weight_decay = 0.0001
 
     # for disease_lp
     # args.normalize_feats = False
@@ -241,15 +263,19 @@ if __name__ == '__main__':
     # args.seed = 2
 
     # args.min_epochs = 1000
-    # args.epochs = 80
+    # args.epochs = 1
+    # args.patience = 300
 
-    args.c = None
-    # args.use_att = True
-
-    args.save = False
+    args.save = True
     args.log_freq = 10
+
+    args.seed = 1234
 
     train(args)
 
-    if args.record_c_and_loss:
-        plot_c()
+    plot_c(stats=True)
+
+    import winsound
+    duration = 1000  # milliseconds
+    freq = 1200  # Hz
+    winsound.Beep(freq, duration)

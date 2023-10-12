@@ -73,7 +73,19 @@ class EdgeCurvature:
         result = 0
         curvature_dict = {}
         for e in tqdm(edges):
+
+            # check for leaf
+            i = e[0]
+            j = e[1]
+            d_i = self.graph.degree[i]
+            d_j = self.graph.degree[j]
+            if d_i == 1 or d_j == 1:
+                # print("here")
+                # curvature_dict[e] = round(c, 2)
+                continue
+            
             c = self.get_edge_curvature(self.graph, e)
+
             result += c
             curvature_dict[e] = round(c, 2)
         nx.set_edge_attributes(self.graph, curvature_dict, "curvature")
